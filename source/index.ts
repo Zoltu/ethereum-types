@@ -124,7 +124,7 @@ export class Bytes3 extends ByteArray { constructor() { super(3) }; static size 
 export class Bytes2 extends ByteArray { constructor() { super(2) }; static size = 2; Bytes2: unknown }
 export class Bytes1 extends ByteArray { constructor() { super(1) }; static size = 1; Bytes1: unknown }
 export class Address extends ByteArray { constructor() { super(20) }; static size = 20; Address: unknown }
-export class SignatureHash extends ByteArray { constructor() { super(4) }; static size = 4; SignatureHash: unknown }
+export class MethodSignatureHash extends ByteArray { constructor() { super(4) }; static size = 4; SignatureHash: unknown }
 export class Signature extends ByteArray { constructor() { super(65) }; static size = 65; Signature: unknown }
 export interface Bytes32 { readonly length: 32 }
 export interface Bytes31 { readonly length: 31 }
@@ -159,7 +159,7 @@ export interface Bytes3 { readonly length: 3 }
 export interface Bytes2 { readonly length: 2 }
 export interface Bytes1 { readonly length: 1 }
 export interface Address { readonly length: 20 }
-export interface SignatureHash { readonly length: 4 }
+export interface MethodSignatureHash { readonly length: 4 }
 export interface Signature { readonly length: 65 }
 export type BytesLike = ArrayLike<number>
 export type Bytes256Like = BytesLike & { length: 256 }
