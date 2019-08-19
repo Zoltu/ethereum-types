@@ -1291,55 +1291,6 @@ export namespace Rpc {
 				}
 			}
 		}
-		export namespace SignTransaction {
-			export interface RawRequest extends IJsonRpcRequest<'eth_signTransaction', [RawOnChainTransaction]> { }
-			export interface RawResponse extends IJsonRpcSuccess<RawData> { }
-			export class Request<TAddress extends AddressLike, TBytes extends BytesLike> {
-				public constructor(
-					public readonly id: string | number | null,
-					public readonly transaction: IOnChainTransaction<TAddress, TBytes>,
-				) { }
-				public readonly wireEncode = (): RawRequest => ({
-					jsonrpc: '2.0',
-					id: this.id,
-					method: 'eth_signTransaction',
-					params: [wireEncodeOnChainTransaction(this.transaction)],
-				})
-			}
-			export class Response {
-				public readonly id: string | number | null
-				public readonly result: Bytes
-				public constructor(raw: RawResponse) {
-					this.id = raw.id
-					this.result = Bytes.fromHexString(raw.result)
-				}
-			}
-		}
-		export namespace SignTypedData {
-			export interface RawRequest extends IJsonRpcRequest<'eth_signTypedData', [RawAddress, RawTypedData]> { }
-			export interface RawResponse extends IJsonRpcSuccess<RawData> { }
-			export class Request<TAddress extends AddressLike> {
-				public constructor(
-					public readonly id: string | number | null,
-					public readonly signerAddress: TAddress,
-					public readonly data: RawTypedData,
-				) { }
-				public readonly wireEncode = (): RawRequest => ({
-					jsonrpc: '2.0',
-					id: this.id,
-					method: 'eth_signTypedData',
-					params: [wireEncodeByteArray(this.signerAddress), this.data],
-				})
-			}
-			export class Response {
-				public readonly id: string | number | null
-				public readonly result: Bytes
-				public constructor(raw: RawResponse) {
-					this.id = raw.id
-					this.result = Bytes.fromHexString(raw.result)
-				}
-			}
-		}
 		export namespace Syncing {
 			export interface RawRequest extends IJsonRpcRequest<'eth_syncing', []> { }
 			export interface RawResponse extends IJsonRpcSuccess<false | { currentBlock: RawQuantity, highestBlock: RawQuantity, startingBlock: RawQuantity }> { }
@@ -1414,8 +1365,6 @@ export interface JsonRpc {
 	sendRawTransaction: RpcMethod<typeof Rpc.Eth.SendRawTransaction.Request, typeof Rpc.Eth.SendRawTransaction.Response>
 	sendTransaction: RpcMethod<typeof Rpc.Eth.SendTransaction.Request, typeof Rpc.Eth.SendTransaction.Response>
 	sign: RpcMethod<typeof Rpc.Eth.Sign.Request, typeof Rpc.Eth.Sign.Response>
-	signTransaction: RpcMethod<typeof Rpc.Eth.SignTransaction.Request, typeof Rpc.Eth.SignTransaction.Response>
-	signTypedData: RpcMethod<typeof Rpc.Eth.SignTypedData.Request, typeof Rpc.Eth.SignTypedData.Response>
 	syncing: RpcMethod<typeof Rpc.Eth.Syncing.Request, typeof Rpc.Eth.Syncing.Response>
 }
 
