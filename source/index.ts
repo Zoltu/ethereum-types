@@ -125,6 +125,7 @@ export class Bytes2 extends ByteArray { constructor() { super(2) }; static size 
 export class Bytes1 extends ByteArray { constructor() { super(1) }; static size = 1; Bytes1: unknown }
 export class Address extends ByteArray { constructor() { super(20) }; static size = 20; Address: unknown }
 export class SignatureHash extends ByteArray { constructor() { super(4) }; static size = 4; SignatureHash: unknown }
+export class Signature extends ByteArray { constructor() { super(65) }; static size = 65; Signature: unknown }
 export interface Bytes32 { readonly length: 32 }
 export interface Bytes31 { readonly length: 31 }
 export interface Bytes30 { readonly length: 30 }
@@ -159,6 +160,7 @@ export interface Bytes2 { readonly length: 2 }
 export interface Bytes1 { readonly length: 1 }
 export interface Address { readonly length: 20 }
 export interface SignatureHash { readonly length: 4 }
+export interface Signature { readonly length: 65 }
 export type BytesLike = ArrayLike<number>
 export type Bytes256Like = BytesLike & { length: 256 }
 export type Bytes32Like = BytesLike & { length: 32 }
@@ -1282,10 +1284,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: Bytes32
+				public readonly result: Signature
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Bytes32.fromHexString(raw.result)
+					this.result = Signature.fromHexString(raw.result)
 				}
 			}
 		}
