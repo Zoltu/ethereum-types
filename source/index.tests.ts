@@ -119,10 +119,10 @@ function testTransaction() {
 	assert.equalBytes(transaction.hash, '55066e2f47b7fdede6ab6f4a1abb026d9e7bbff94259d2e8da8ed7fb40e87673')
 	assert.equal(transaction.index, 0)
 	assert.equal(transaction.nonce, 0x35d)
-	assert.equalBytes(transaction.r, '7bb1ee45cab7da0a651ad45f3b28f4f1503125132d35c211648139cedbd99bbb')
-	assert.equalBytes(transaction.s, '5257df01b2ec8b3384344f29b4c03c1715c1eee30e9c3fd82c0b29691344200e')
+	assert.equal(transaction.r, 0x7bb1ee45cab7da0a651ad45f3b28f4f1503125132d35c211648139cedbd99bbbn)
+	assert.equal(transaction.s, 0x5257df01b2ec8b3384344f29b4c03c1715c1eee30e9c3fd82c0b29691344200en)
 	assert.equalBytes(transaction.to!, 'd9dbe80995dbe64e371464b94d78baf10a694ed0')
-	assert.equalBytes(transaction.v, '26')
+	assert.equal(transaction.v, 0x26n)
 	assert.equal(transaction.value, 0n)
 }
 

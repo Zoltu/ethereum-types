@@ -125,7 +125,7 @@ export class Bytes2 extends ByteArray { constructor() { super(2) }; static size 
 export class Bytes1 extends ByteArray { constructor() { super(1) }; static size = 1; Bytes1: unknown }
 export class Address extends ByteArray { constructor() { super(20) }; static size = 20; Address: unknown }
 export class MethodSignatureHash extends ByteArray { constructor() { super(4) }; static size = 4; SignatureHash: unknown }
-export class Signature extends ByteArray { constructor() { super(65) }; static size = 65; Signature: unknown }
+export class EncodedSignature extends ByteArray { constructor() { super(65) }; static size = 65; EncodedSignature: unknown }
 export interface Bytes32 { readonly length: 32 }
 export interface Bytes31 { readonly length: 31 }
 export interface Bytes30 { readonly length: 30 }
@@ -160,7 +160,7 @@ export interface Bytes2 { readonly length: 2 }
 export interface Bytes1 { readonly length: 1 }
 export interface Address { readonly length: 20 }
 export interface MethodSignatureHash { readonly length: 4 }
-export interface Signature { readonly length: 65 }
+export interface EncodedSignature { readonly length: 65 }
 export type BytesLike = ArrayLike<number>
 export type Bytes256Like = BytesLike & { length: 256 }
 export type Bytes32Like = BytesLike & { length: 32 }
@@ -248,9 +248,9 @@ export interface RawTransaction {
 	nonce: RawQuantity
 	gas: RawQuantity
 	gasPrice: RawQuantity
+	r: RawQuantity
+	s: RawQuantity
 	v: RawQuantity
-	r: RawData
-	s: RawData
 }
 
 export interface RawBlock {
@@ -375,7 +375,7 @@ export class TransactionReceipt implements ITransactionReceipt<Bytes32, Address,
 	}
 }
 
-export interface ITransaction<TBytes32, TAddress, TBytes, TBytes1> {
+export interface ITransaction<TBytes32, TAddress, TBytes> {
 	blockHash: TBytes32 | null
 	blockNumber: number | null
 	hash: TBytes32
@@ -387,12 +387,12 @@ export interface ITransaction<TBytes32, TAddress, TBytes, TBytes1> {
 	nonce: number
 	gas: number
 	gasPrice: bigint
-	v: TBytes1
-	r: TBytes32
-	s: TBytes32
+	r: bigint
+	s: bigint
+	v: bigint
 }
 
-export class Transaction implements ITransaction<Bytes32, Address, Bytes, Bytes1> {
+export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
 	public readonly blockHash: Bytes32 | null
 	public readonly blockNumber: number | null
 	public readonly hash: Bytes32
@@ -404,9 +404,9 @@ export class Transaction implements ITransaction<Bytes32, Address, Bytes, Bytes1
 	public readonly nonce: number
 	public readonly gas: number
 	public readonly gasPrice: bigint
-	public readonly v: Bytes1
-	public readonly r: Bytes32
-	public readonly s: Bytes32
+	public readonly r: bigint
+	public readonly s: bigint
+	public readonly v: bigint
 	public constructor(raw: RawTransaction) {
 		this.blockHash = (raw.blockHash !== null) ? Bytes32.fromHexString(raw.blockHash) : null
 		this.blockNumber = (raw.blockNumber !== null) ? Number.parseInt(raw.blockNumber, 16) : null
@@ -419,9 +419,9 @@ export class Transaction implements ITransaction<Bytes32, Address, Bytes, Bytes1
 		this.nonce = Number.parseInt(raw.nonce)
 		this.gas = Number.parseInt(raw.gas, 16)
 		this.gasPrice = BigInt(raw.gasPrice)
-		this.v = Bytes1.fromUnsignedInteger(BigInt(raw.v))
-		this.r = Bytes32.fromHexString(raw.r)
-		this.s = Bytes32.fromHexString(raw.s)
+		this.r = BigInt(raw.r)
+		this.s = BigInt(raw.s)
+		this.v = BigInt(raw.v)
 	}
 }
 
@@ -493,10 +493,10 @@ export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transact
 	}
 }
 
-export interface ISignature<TBytes32, TBytes1> {
-	v: TBytes1
-	r: TBytes32
-	s: TBytes32
+export interface ISignature {
+	r: bigint
+	s: bigint
+	v: bigint
 }
 
 export interface IOffChainTransaction<TAddress, TBytes> {
@@ -517,7 +517,7 @@ export interface IUnsignedTransaction<TAddress, TBytes> extends IOnChainTransact
 	chainId: number
 }
 
-export interface ISignedTransaction<TAddress, TBytes, TBytes32, TBytes1> extends IUnsignedTransaction<TAddress, TBytes>, ISignature<TBytes32, TBytes1> {
+export interface ISignedTransaction<TAddress, TBytes> extends IUnsignedTransaction<TAddress, TBytes>, ISignature {
 }
 
 export function wireEncodeByteArray(bytes: BytesLike): string {
@@ -540,37 +540,9 @@ export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction<
 }
 
 export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction<AddressLike, BytesLike>): RawOnChainTransaction {
-	return Object.assign(wireEncodeOffChainTransaction(transaction), {
-		nonce: wireEncodeNumber(transaction.nonce)
-	})
-}
-
-export function offChainToUnsignedTransaction<TAddress, TBytes>(transaction: IOffChainTransaction<TAddress, TBytes>, gasLimit: number, nonce: number, chainId: number): IUnsignedTransaction<TAddress, TBytes> {
 	return {
-		from: transaction.from,
-		to: transaction.to,
-		gasPrice: transaction.gasPrice,
-		value: transaction.value,
-		data: transaction.data,
-		gasLimit: gasLimit,
-		nonce: nonce,
-		chainId: chainId,
-	}
-}
-
-export function unsignedToSignedTransaction<TAddress, TBytes, TBytes32, TBytes1>(transaction: IUnsignedTransaction<TAddress, TBytes>, v: TBytes1, r: TBytes32, s: TBytes32): ISignedTransaction<TAddress, TBytes, TBytes32, TBytes1> {
-	return {
-		from: transaction.from,
-		to: transaction.to,
-		gasPrice: transaction.gasPrice,
-		value: transaction.value,
-		data: transaction.data,
-		gasLimit: transaction.gasLimit,
-		nonce: transaction.nonce,
-		chainId: transaction.chainId,
-		v: v,
-		r: r,
-		s: s,
+		...wireEncodeOffChainTransaction(transaction),
+		nonce: wireEncodeNumber(transaction.nonce),
 	}
 }
 
@@ -1284,10 +1256,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: Signature
+				public readonly result: EncodedSignature
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Signature.fromHexString(raw.result)
+					this.result = EncodedSignature.fromHexString(raw.result)
 				}
 			}
 		}
