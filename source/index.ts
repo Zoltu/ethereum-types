@@ -1,5 +1,5 @@
 abstract class ByteArray extends Uint8Array {
-	public static size: number | null
+	public static readonly size: number | null
 
 	public static fromByteArray<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, bytes: BytesLike, pad: 'left' | 'right' = 'right'): InstanceType<TConstructor> {
 		const result = (this.size) ? new this() : new this(bytes.length)
@@ -200,7 +200,7 @@ export type MethodSignatureHashLike = BytesLike & { length: 4 }
 
 export type Encodable = EncodablePrimitive | EncodableTuple | EncodableArray
 export type EncodablePrimitive = BytesLike | string | boolean | bigint
-export interface EncodableTuple { [x: string]: Encodable }
+export interface EncodableTuple { readonly [x: string]: Encodable }
 export interface EncodableArray extends ArrayLike<Encodable> { }
 export type FixedBytesLike = Bytes32Like | Bytes31Like | Bytes30Like | Bytes29Like | Bytes28Like | Bytes27Like | Bytes26Like | Bytes25Like | Bytes24Like | Bytes23Like | Bytes22Like | Bytes21Like | Bytes20Like | Bytes19Like | Bytes18Like | Bytes17Like | Bytes16Like | Bytes15Like | Bytes14Like | Bytes13Like | Bytes12Like | Bytes11Like | Bytes10Like | Bytes9Like | Bytes8Like | Bytes7Like | Bytes6Like | Bytes5Like | Bytes4Like | Bytes3Like | Bytes2Like | Bytes1Like
 
@@ -211,103 +211,103 @@ export type RawAddress = string
 export type RawData = string
 
 export interface RawLog {
-	blockHash: RawHash
-	blockNumber: RawQuantity
-	transactionHash: RawHash
-	transactionIndex: RawQuantity
-	logIndex: RawQuantity
-	address: RawAddress
-	topics: Array<RawHash>
-	data: RawData
+	readonly blockHash: RawHash
+	readonly blockNumber: RawQuantity
+	readonly transactionHash: RawHash
+	readonly transactionIndex: RawQuantity
+	readonly logIndex: RawQuantity
+	readonly address: RawAddress
+	readonly topics: Array<RawHash>
+	readonly data: RawData
 }
 
 export interface RawTransactionReceipt {
-	blockHash: RawHash
-	blockNumber: RawQuantity
-	transactionHash: RawHash
-	transactionIndex: RawQuantity
-	from: RawAddress
-	to: RawAddress | null
-	contractAddress: RawAddress | null
-	cumulativeGasUsed: RawQuantity
-	gasUsed: RawQuantity
-	logs: Array<RawLog>
-	logsBloom: RawData
-	status: RawQuantity
+	readonly blockHash: RawHash
+	readonly blockNumber: RawQuantity
+	readonly transactionHash: RawHash
+	readonly transactionIndex: RawQuantity
+	readonly from: RawAddress
+	readonly to: RawAddress | null
+	readonly contractAddress: RawAddress | null
+	readonly cumulativeGasUsed: RawQuantity
+	readonly gasUsed: RawQuantity
+	readonly logs: Array<RawLog>
+	readonly logsBloom: RawData
+	readonly status: RawQuantity
 }
 
 export interface RawTransaction {
-	blockHash: RawHash | null
-	blockNumber: RawQuantity | null
-	hash: RawHash
-	transactionIndex: RawQuantity | null
-	from: RawAddress
-	to: RawAddress | null
-	value: RawQuantity
-	input: RawData
-	nonce: RawQuantity
-	gas: RawQuantity
-	gasPrice: RawQuantity
-	r: RawQuantity
-	s: RawQuantity
-	v: RawQuantity
+	readonly blockHash: RawHash | null
+	readonly blockNumber: RawQuantity | null
+	readonly hash: RawHash
+	readonly transactionIndex: RawQuantity | null
+	readonly from: RawAddress
+	readonly to: RawAddress | null
+	readonly value: RawQuantity
+	readonly input: RawData
+	readonly nonce: RawQuantity
+	readonly gas: RawQuantity
+	readonly gasPrice: RawQuantity
+	readonly r: RawQuantity
+	readonly s: RawQuantity
+	readonly v: RawQuantity
 }
 
 export interface RawBlock {
-	hash: RawHash | null
-	number: RawQuantity | null
-	nonce: RawData | null
-	logsBloom: RawData | null
-	parentHash: RawHash
-	sha3Uncles: RawHash
-	transactionsRoot: RawData
-	stateRoot: RawData
-	receiptsRoot: RawData
-	author: RawAddress
-	miner: RawAddress
-	difficulty: RawQuantity
-	totalDifficulty: RawQuantity
-	extraData: RawData
-	size: RawQuantity
-	gasLimit: RawQuantity
-	gasUsed: RawQuantity
-	timestamp: RawQuantity
-	transactions: Array<RawTransaction | RawHash>
-	uncles: Array<RawHash>
+	readonly hash: RawHash | null
+	readonly number: RawQuantity | null
+	readonly nonce: RawData | null
+	readonly logsBloom: RawData | null
+	readonly parentHash: RawHash
+	readonly sha3Uncles: RawHash
+	readonly transactionsRoot: RawData
+	readonly stateRoot: RawData
+	readonly receiptsRoot: RawData
+	readonly author: RawAddress
+	readonly miner: RawAddress
+	readonly difficulty: RawQuantity
+	readonly totalDifficulty: RawQuantity
+	readonly extraData: RawData
+	readonly size: RawQuantity
+	readonly gasLimit: RawQuantity
+	readonly gasUsed: RawQuantity
+	readonly timestamp: RawQuantity
+	readonly transactions: Array<RawTransaction | RawHash>
+	readonly uncles: Array<RawHash>
 }
 
 export interface RawTypedData {
-	types: {
-		EIP712Domain: Array<{ name: string, type: string }>
-		[type: string]: Array<{ name: string, type: string }>
+	readonly types: {
+		readonly EIP712Domain: Array<{ name: string, type: string }>
+		readonly [type: string]: Array<{ name: string, type: string }>
 	}
-	primaryType: string
-	domain: unknown
-	message: unknown
+	readonly primaryType: string
+	readonly domain: unknown
+	readonly message: unknown
 }
 
 export interface RawOffChainTransaction {
-	from: RawAddress
-	to: RawAddress | null
-	value: RawQuantity
-	data: RawData
-	gas: RawQuantity | null
-	gasPrice: RawQuantity
+	readonly from: RawAddress
+	readonly to: RawAddress | null
+	readonly value: RawQuantity
+	readonly data: RawData
+	readonly gas: RawQuantity | null
+	readonly gasPrice: RawQuantity
 }
 
 export interface RawOnChainTransaction extends RawOffChainTransaction {
-	nonce: RawQuantity
+	readonly nonce: RawQuantity
 }
 
 export interface ILog<TBytes32, TAddress, TBytes> {
-	blockHash: TBytes32
-	blockNumber: number
-	transactionHash: TBytes32
-	transactionIndex: number
-	logIndex: number
-	address: TAddress
-	topics: Array<TBytes32>
-	data: TBytes
+	readonly blockHash: TBytes32
+	readonly blockNumber: number
+	readonly transactionHash: TBytes32
+	readonly transactionIndex: number
+	readonly logIndex: number
+	readonly address: TAddress
+	readonly topics: Array<TBytes32>
+	readonly data: TBytes
 }
 
 export class Log implements ILog<Bytes32, Address, Bytes> {
@@ -332,18 +332,18 @@ export class Log implements ILog<Bytes32, Address, Bytes> {
 }
 
 export interface ITransactionReceipt<TBytes32, TAddress, TLog, TBytes256> {
-	blockHash: TBytes32
-	blockNumber: number
-	hash: TBytes32
-	index: number
-	from: TAddress
-	to: TAddress | null
-	contractAddress: TAddress | null
-	cumulativeGasUsed: number
-	gasUsed: number
-	logs: Array<TLog>
-	logsBloom: TBytes256
-	status: boolean
+	readonly blockHash: TBytes32
+	readonly blockNumber: number
+	readonly hash: TBytes32
+	readonly index: number
+	readonly from: TAddress
+	readonly to: TAddress | null
+	readonly contractAddress: TAddress | null
+	readonly cumulativeGasUsed: number
+	readonly gasUsed: number
+	readonly logs: Array<TLog>
+	readonly logsBloom: TBytes256
+	readonly status: boolean
 }
 
 export class TransactionReceipt implements ITransactionReceipt<Bytes32, Address, Log, Bytes256> {
@@ -376,20 +376,20 @@ export class TransactionReceipt implements ITransactionReceipt<Bytes32, Address,
 }
 
 export interface ITransaction<TBytes32, TAddress, TBytes> {
-	blockHash: TBytes32 | null
-	blockNumber: number | null
-	hash: TBytes32
-	index: number | null
-	from: TAddress
-	to: TAddress | null
-	value: bigint
-	data: TBytes
-	nonce: number
-	gas: number
-	gasPrice: bigint
-	r: bigint
-	s: bigint
-	v: bigint
+	readonly blockHash: TBytes32 | null
+	readonly blockNumber: number | null
+	readonly hash: TBytes32
+	readonly index: number | null
+	readonly from: TAddress
+	readonly to: TAddress | null
+	readonly value: bigint
+	readonly data: TBytes
+	readonly nonce: number
+	readonly gas: number
+	readonly gasPrice: bigint
+	readonly r: bigint
+	readonly s: bigint
+	readonly v: bigint
 }
 
 export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
@@ -426,26 +426,26 @@ export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
 }
 
 export interface IBlock<TBytes, TBytes32, TBytes256, TAddress, TTransaction> {
-	hash: TBytes32 | null
-	number: number | null
-	nonce: bigint | null
-	logsBloom: TBytes256 | null
-	parentHash: TBytes32
-	sha3Uncles: TBytes32
-	transactionsRoot: TBytes32
-	stateRoot: TBytes32
-	receiptsRoot: TBytes32
-	author: TAddress
-	miner: TAddress
-	difficulty: bigint
-	totalDifficulty: bigint
-	extraData: TBytes
-	size: number
-	gasLimit: number
-	gasUsed: number
-	timestamp: Date
-	transactions: Array<TTransaction | TBytes32>
-	uncles: Array<TBytes32>
+	readonly hash: TBytes32 | null
+	readonly number: number | null
+	readonly nonce: bigint | null
+	readonly logsBloom: TBytes256 | null
+	readonly parentHash: TBytes32
+	readonly sha3Uncles: TBytes32
+	readonly transactionsRoot: TBytes32
+	readonly stateRoot: TBytes32
+	readonly receiptsRoot: TBytes32
+	readonly author: TAddress
+	readonly miner: TAddress
+	readonly difficulty: bigint
+	readonly totalDifficulty: bigint
+	readonly extraData: TBytes
+	readonly size: number
+	readonly gasLimit: number
+	readonly gasUsed: number
+	readonly timestamp: Date
+	readonly transactions: Array<TTransaction | TBytes32>
+	readonly uncles: Array<TBytes32>
 }
 
 export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transaction> {
@@ -494,27 +494,27 @@ export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transact
 }
 
 export interface ISignature {
-	r: bigint
-	s: bigint
-	v: bigint
+	readonly r: bigint
+	readonly s: bigint
+	readonly v: bigint
 }
 
 export interface IOffChainTransaction<TAddress, TBytes> {
-	from: TAddress
-	to: TAddress | null
-	value: bigint
-	data: TBytes
-	gasLimit: number | null
-	gasPrice: bigint
+	readonly from: TAddress
+	readonly to: TAddress | null
+	readonly value: bigint
+	readonly data: TBytes
+	readonly gasLimit: number | null
+	readonly gasPrice: bigint
 }
 
 export interface IOnChainTransaction<TAddress, TBytes> extends IOffChainTransaction<TAddress, TBytes> {
-	gasLimit: number
-	nonce: number
+	readonly gasLimit: number
+	readonly nonce: number
 }
 
 export interface IUnsignedTransaction<TAddress, TBytes> extends IOnChainTransaction<TAddress, TBytes> {
-	chainId: number
+	readonly chainId: number
 }
 
 export interface ISignedTransaction<TAddress, TBytes> extends IUnsignedTransaction<TAddress, TBytes>, ISignature {
@@ -548,23 +548,23 @@ export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction<Ad
 
 export type JsonRpcMethod = 'eth_accounts' | 'eth_blockNumber' | 'eth_call' | 'eth_chainId' | 'eth_coinbase' | 'eth_estimateGas' | 'eth_gasPrice' | 'eth_getBalance' | 'eth_getBlockByHash' | 'eth_getBlockByNumber' | 'eth_getBlockTransactionCountByHash' | 'eth_getBlockTransactionCountByNumber' | 'eth_getCode' | 'eth_getLogs' | 'eth_getStorageAt' | 'eth_getTransactionByBlockHashAndIndex' | 'eth_getTransactionByBlockNumberAndIndex' | 'eth_getTransactionByHash' | 'eth_getTransactionCount' | 'eth_getTransactionReceipt' | 'eth_getUncleByBlockHashAndIndex' | 'eth_getUncleByBlockNumberAndIndex' | 'eth_getUncleCountByBlockHash' | 'eth_getUncleCountByBlockNumber' | 'eth_protocolVersion' | 'eth_sendRawTransaction' | 'eth_sendTransaction' | 'eth_sign' | 'eth_signTransaction' | 'eth_signTypedData' | 'eth_syncing'
 export interface IJsonRpcRequest<TMethod extends JsonRpcMethod, TParams extends Array<unknown>> {
-	jsonrpc: '2.0'
-	id: string | number | null
-	method: TMethod
-	params?: TParams
+	readonly jsonrpc: '2.0'
+	readonly id: string | number | null
+	readonly method: TMethod
+	readonly params?: TParams
 }
 export interface IJsonRpcSuccess<TResult> {
-	jsonrpc: '2.0'
-	id: string | number | null
-	result: TResult
+	readonly jsonrpc: '2.0'
+	readonly id: string | number | null
+	readonly result: TResult
 }
 export interface IJsonRpcError {
-	jsonrpc: '2.0'
-	id: string | number | null
-	error: {
-		code: number
-		message: string
-		data?: unknown
+	readonly jsonrpc: '2.0'
+	readonly id: string | number | null
+	readonly error: {
+		readonly code: number
+		readonly message: string
+		readonly data?: unknown
 	}
 }
 export type IJsonRpcResponse<T> = IJsonRpcSuccess<T> | IJsonRpcError
@@ -891,10 +891,10 @@ export namespace Rpc {
 				public readonly wireEncode = (): RawRequest => {
 					const address = (Array.isArray(this.criteria.address)) ? this.criteria.address.map(x => wireEncodeByteArray(x)) : wireEncodeByteArray(this.criteria.address)
 					const topics = this.criteria.topics.map(x => wireEncodeByteArray(x))
-					const criteriaBlockTarget: { blockHash: string } | { fromBlock: string, toBlock: string } = this.isCriteriaHash(this.criteria)
+					const criteriaBlockTarget = this.isCriteriaHash(this.criteria)
 						? { blockHash: wireEncodeByteArray(this.criteria.blockHash) }
 						: { fromBlock: wireEncodeBlockTag(this.criteria.fromBlock), toBlock: wireEncodeBlockTag(this.criteria.toBlock) }
-					const criteria = Object.assign({ address, topics }, criteriaBlockTarget)
+					const criteria = { address, topics, ...criteriaBlockTarget }
 					return {
 						jsonrpc: '2.0',
 						id: this.id,
@@ -1265,7 +1265,7 @@ export namespace Rpc {
 		}
 		export namespace Syncing {
 			export interface RawRequest extends IJsonRpcRequest<'eth_syncing', []> { }
-			export interface RawResponse extends IJsonRpcSuccess<false | { currentBlock: RawQuantity, highestBlock: RawQuantity, startingBlock: RawQuantity }> { }
+			export interface RawResponse extends IJsonRpcSuccess<false | { readonly currentBlock: RawQuantity, readonly highestBlock: RawQuantity, readonly startingBlock: RawQuantity }> { }
 			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
@@ -1278,7 +1278,7 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: false | { currentBlock: number, highestBlock: number, startingBlock: number }
+				public readonly result: false | { readonly currentBlock: number, readonly highestBlock: number, readonly startingBlock: number }
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
 					this.result = (typeof raw.result === 'boolean') ? raw.result : {
@@ -1293,51 +1293,51 @@ export namespace Rpc {
 }
 
 type DropFirst<T extends any[]> = ((...t: T) => void) extends ((x: any, ...u: infer U) => void) ? U : never
-type ResultType<T extends { result: unknown }> = T extends { result: infer R } ? R : never
+type ResultType<T extends { readonly result: unknown }> = T extends { readonly result: infer R } ? R : never
 type RpcMethod<
 	TRequestConstructor extends new (id: string | number | null, ...args: any[]) => { wireEncode: () => IJsonRpcRequest<JsonRpcMethod, any[]> },
-	TResponseConstructor extends new (rawResponse: IJsonRpcSuccess<any>) => { result: any },
+	TResponseConstructor extends new (rawResponse: IJsonRpcSuccess<any>) => { readonly result: any },
 > = (...args: DropFirst<ConstructorParameters<TRequestConstructor>>) => Promise<ResultType<InstanceType<TResponseConstructor>>>
 
 export interface JsonRpc {
-	sendEth: (destination: AddressLike, amount: bigint) => Promise<TransactionReceipt>
-	deployContract: (bytecode: BytesLike, value?: bigint) => Promise<Address>
-	onChainContractCall: (transaction: Partial<IOnChainTransaction<AddressLike, BytesLike>> & { to: AddressLike, data: BytesLike }) => Promise<TransactionReceipt>
-	offChainContractCall: (transaction: Partial<IOffChainTransaction<AddressLike, BytesLike>> & { to: AddressLike, data: BytesLike }) => Promise<Bytes>
-	remoteProcedureCall: <
+	readonly sendEth: (destination: AddressLike, amount: bigint) => Promise<TransactionReceipt>
+	readonly deployContract: (bytecode: BytesLike, value?: bigint) => Promise<Address>
+	readonly onChainContractCall: (transaction: Partial<IOnChainTransaction<AddressLike, BytesLike>> & { readonly to: AddressLike, readonly data: BytesLike }) => Promise<TransactionReceipt>
+	readonly offChainContractCall: (transaction: Partial<IOffChainTransaction<AddressLike, BytesLike>> & { readonly to: AddressLike, readonly data: BytesLike }) => Promise<Bytes>
+	readonly remoteProcedureCall: <
 		TRawRequest extends IJsonRpcRequest<JsonRpcMethod, Array<any>>,
 		TRawResponse extends IJsonRpcSuccess<any>
 	>(request: TRawRequest) => Promise<TRawResponse>
 
-	call: RpcMethod<typeof Rpc.Eth.Call.Request, typeof Rpc.Eth.Call.Response>
-	coinbase: RpcMethod<typeof Rpc.Eth.Coinbase.Request, typeof Rpc.Eth.Coinbase.Response>
-	estimateGas: RpcMethod<typeof Rpc.Eth.EstimateGas.Request, typeof Rpc.Eth.EstimateGas.Response>
-	getAccounts: RpcMethod<typeof Rpc.Eth.Accounts.Request, typeof Rpc.Eth.Accounts.Response>
-	getBalance: RpcMethod<typeof Rpc.Eth.GetBalance.Request, typeof Rpc.Eth.GetBalance.Response>
-	getBlockByHash: RpcMethod<typeof Rpc.Eth.GetBlockByHash.Request, typeof Rpc.Eth.GetBlockByHash.Response>
-	getBlockByNumber: RpcMethod<typeof Rpc.Eth.GetBlockByNumber.Request, typeof Rpc.Eth.GetBlockByNumber.Response>
-	getBlockNumber: RpcMethod<typeof Rpc.Eth.BlockNumber.Request, typeof Rpc.Eth.BlockNumber.Response>
-	getBlockTransactionCountByHash: RpcMethod<typeof Rpc.Eth.GetBlockTransactionCountByHash.Request, typeof Rpc.Eth.GetBlockTransactionCountByHash.Response>
-	getBlockTransactionCountByNumber: RpcMethod<typeof Rpc.Eth.GetBlockTransactionCountByNumber.Request, typeof Rpc.Eth.GetBlockTransactionCountByNumber.Response>
-	getChainId: RpcMethod<typeof Rpc.Eth.ChainId.Request, typeof Rpc.Eth.ChainId.Response>
-	getCode: RpcMethod<typeof Rpc.Eth.GetCode.Request, typeof Rpc.Eth.GetCode.Response>
-	getGasPrice: RpcMethod<typeof Rpc.Eth.GasPrice.Request, typeof Rpc.Eth.GasPrice.Response>
-	getLogs: RpcMethod<typeof Rpc.Eth.GetLogs.Request, typeof Rpc.Eth.GetLogs.Response>
-	getStorageAt: RpcMethod<typeof Rpc.Eth.GetStorageAt.Request, typeof Rpc.Eth.GetStorageAt.Response>
-	getTransactionByBlockHashAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Response>
-	getTransactionByBlockNumberAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Response>
-	getTransactionByHash: RpcMethod<typeof Rpc.Eth.GetTransactionByHash.Request, typeof Rpc.Eth.GetTransactionByHash.Response>
-	getTransactionCount: RpcMethod<typeof Rpc.Eth.GetTransactionCount.Request, typeof Rpc.Eth.GetTransactionCount.Response>
-	getTransactionReceipt: RpcMethod<typeof Rpc.Eth.GetTransactionReceipt.Request, typeof Rpc.Eth.GetTransactionReceipt.Response>
-	getUncleByBlockHashAndIndex: RpcMethod<typeof Rpc.Eth.GetUncleByBlockHashAndIndex.Request, typeof Rpc.Eth.GetUncleByBlockHashAndIndex.Response>
-	getUncleByBlockNumberAndIndex: RpcMethod<typeof Rpc.Eth.GetUncleByBlockNumberAndIndex.Request, typeof Rpc.Eth.GetUncleByBlockNumberAndIndex.Response>
-	getUncleCountByBlockHash: RpcMethod<typeof Rpc.Eth.GetUncleCountByBlockHash.Request, typeof Rpc.Eth.GetUncleCountByBlockHash.Response>
-	getUncleCountByBlockNumber: RpcMethod<typeof Rpc.Eth.GetUncleCountByBlockNumber.Request, typeof Rpc.Eth.GetUncleCountByBlockNumber.Response>
-	getProtocolVersion: RpcMethod<typeof Rpc.Eth.ProtocolVersion.Request, typeof Rpc.Eth.ProtocolVersion.Response>
-	sendRawTransaction: RpcMethod<typeof Rpc.Eth.SendRawTransaction.Request, typeof Rpc.Eth.SendRawTransaction.Response>
-	sendTransaction: RpcMethod<typeof Rpc.Eth.SendTransaction.Request, typeof Rpc.Eth.SendTransaction.Response>
-	sign: RpcMethod<typeof Rpc.Eth.Sign.Request, typeof Rpc.Eth.Sign.Response>
-	syncing: RpcMethod<typeof Rpc.Eth.Syncing.Request, typeof Rpc.Eth.Syncing.Response>
+	readonly call: RpcMethod<typeof Rpc.Eth.Call.Request, typeof Rpc.Eth.Call.Response>
+	readonly coinbase: RpcMethod<typeof Rpc.Eth.Coinbase.Request, typeof Rpc.Eth.Coinbase.Response>
+	readonly estimateGas: RpcMethod<typeof Rpc.Eth.EstimateGas.Request, typeof Rpc.Eth.EstimateGas.Response>
+	readonly getAccounts: RpcMethod<typeof Rpc.Eth.Accounts.Request, typeof Rpc.Eth.Accounts.Response>
+	readonly getBalance: RpcMethod<typeof Rpc.Eth.GetBalance.Request, typeof Rpc.Eth.GetBalance.Response>
+	readonly getBlockByHash: RpcMethod<typeof Rpc.Eth.GetBlockByHash.Request, typeof Rpc.Eth.GetBlockByHash.Response>
+	readonly getBlockByNumber: RpcMethod<typeof Rpc.Eth.GetBlockByNumber.Request, typeof Rpc.Eth.GetBlockByNumber.Response>
+	readonly getBlockNumber: RpcMethod<typeof Rpc.Eth.BlockNumber.Request, typeof Rpc.Eth.BlockNumber.Response>
+	readonly getBlockTransactionCountByHash: RpcMethod<typeof Rpc.Eth.GetBlockTransactionCountByHash.Request, typeof Rpc.Eth.GetBlockTransactionCountByHash.Response>
+	readonly getBlockTransactionCountByNumber: RpcMethod<typeof Rpc.Eth.GetBlockTransactionCountByNumber.Request, typeof Rpc.Eth.GetBlockTransactionCountByNumber.Response>
+	readonly getChainId: RpcMethod<typeof Rpc.Eth.ChainId.Request, typeof Rpc.Eth.ChainId.Response>
+	readonly getCode: RpcMethod<typeof Rpc.Eth.GetCode.Request, typeof Rpc.Eth.GetCode.Response>
+	readonly getGasPrice: RpcMethod<typeof Rpc.Eth.GasPrice.Request, typeof Rpc.Eth.GasPrice.Response>
+	readonly getLogs: RpcMethod<typeof Rpc.Eth.GetLogs.Request, typeof Rpc.Eth.GetLogs.Response>
+	readonly getStorageAt: RpcMethod<typeof Rpc.Eth.GetStorageAt.Request, typeof Rpc.Eth.GetStorageAt.Response>
+	readonly getTransactionByBlockHashAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Response>
+	readonly getTransactionByBlockNumberAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Response>
+	readonly getTransactionByHash: RpcMethod<typeof Rpc.Eth.GetTransactionByHash.Request, typeof Rpc.Eth.GetTransactionByHash.Response>
+	readonly getTransactionCount: RpcMethod<typeof Rpc.Eth.GetTransactionCount.Request, typeof Rpc.Eth.GetTransactionCount.Response>
+	readonly getTransactionReceipt: RpcMethod<typeof Rpc.Eth.GetTransactionReceipt.Request, typeof Rpc.Eth.GetTransactionReceipt.Response>
+	readonly getUncleByBlockHashAndIndex: RpcMethod<typeof Rpc.Eth.GetUncleByBlockHashAndIndex.Request, typeof Rpc.Eth.GetUncleByBlockHashAndIndex.Response>
+	readonly getUncleByBlockNumberAndIndex: RpcMethod<typeof Rpc.Eth.GetUncleByBlockNumberAndIndex.Request, typeof Rpc.Eth.GetUncleByBlockNumberAndIndex.Response>
+	readonly getUncleCountByBlockHash: RpcMethod<typeof Rpc.Eth.GetUncleCountByBlockHash.Request, typeof Rpc.Eth.GetUncleCountByBlockHash.Response>
+	readonly getUncleCountByBlockNumber: RpcMethod<typeof Rpc.Eth.GetUncleCountByBlockNumber.Request, typeof Rpc.Eth.GetUncleCountByBlockNumber.Response>
+	readonly getProtocolVersion: RpcMethod<typeof Rpc.Eth.ProtocolVersion.Request, typeof Rpc.Eth.ProtocolVersion.Response>
+	readonly sendRawTransaction: RpcMethod<typeof Rpc.Eth.SendRawTransaction.Request, typeof Rpc.Eth.SendRawTransaction.Response>
+	readonly sendTransaction: RpcMethod<typeof Rpc.Eth.SendTransaction.Request, typeof Rpc.Eth.SendTransaction.Response>
+	readonly sign: RpcMethod<typeof Rpc.Eth.Sign.Request, typeof Rpc.Eth.Sign.Response>
+	readonly syncing: RpcMethod<typeof Rpc.Eth.Syncing.Request, typeof Rpc.Eth.Syncing.Response>
 }
 
 // https://github.com/microsoft/TypeScript/issues/31535
