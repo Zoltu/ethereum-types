@@ -196,7 +196,7 @@ export type Bytes3Like = BytesLike & { length: 3 }
 export type Bytes2Like = BytesLike & { length: 2 }
 export type Bytes1Like = BytesLike & { length: 1 }
 export type AddressLike = BytesLike & { length: 20 }
-export type SignatureHashLike = BytesLike & { length: 4 }
+export type MethodSignatureHashLike = BytesLike & { length: 4 }
 
 export type Encodable = EncodablePrimitive | EncodableTuple | EncodableArray
 export type EncodablePrimitive = BytesLike | string | boolean | bigint
