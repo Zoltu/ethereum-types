@@ -1,4 +1,4 @@
-import { Bytes1, Bytes32, Bytes4, Bytes3, Bytes, TransactionReceipt, Transaction, Block, wireEncodeByteArray, wireEncodeOffChainTransaction, Address, wireEncodeNumber, wireEncodeBlockTag, wireEncodeOnChainTransaction, validateJsonRpcResponse } from "./index"
+import { Bytes, TransactionReceipt, Transaction, Block, wireEncodeByteArray, wireEncodeOffChainTransaction, wireEncodeNumber, wireEncodeBlockTag, wireEncodeOnChainTransaction, validateJsonRpcResponse } from "./index"
 import { assert, use as chaiUse } from "chai"
 import chaiBytes from 'chai-bytes'
 import chaiDatetime from 'chai-datetime'
@@ -8,28 +8,28 @@ chaiUse(chaiDatetime)
 declare global { const console: { log: (message: string) => void; error: (message: string) => void } }
 
 function testBytes() {
-	assert.equalBytes(Bytes1.fromUnsignedInteger(0n), [0x00])
-	assert.equalBytes(Bytes32.fromUnsignedInteger(0n), [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-	assert.equalBytes(Bytes1.fromSignedInteger(0n), [0x00])
-	assert.equalBytes(Bytes1.fromUnsignedInteger(1n), [0x01])
-	assert.equalBytes(Bytes1.fromSignedInteger(1n), [0x01])
-	assert.equalBytes(Bytes1.fromSignedInteger(-1n), [0xff])
-	assert.equalBytes(Bytes1.fromHexString('0x00'), [0x00])
-	assert.equalBytes(Bytes1.fromHexString('00'), [0x00])
-	assert.equalBytes(Bytes3.fromHexString('0x000000'), [0x00, 0x00, 0x00])
-	assert.equalBytes(Bytes4.fromHexString('00000000'), [0x00, 0x00, 0x00, 0x00])
-	assert.equalBytes(new Bytes1(), [0x00])
-	assert.equal(new Bytes1().to0xString(), '0x00')
-	assert.equal(new Bytes1().toString(), '00')
-	assert.equal(new Bytes1().toUnsignedBigint(), 0n)
-	assert.equal(new Bytes1().toSignedBigint(), 0n)
-	assert.equal(Bytes1.fromUnsignedInteger(1n).toUnsignedBigint(), 1n)
-	assert.equal(Bytes1.fromSignedInteger(1n).toSignedBigint(), 1n)
-	assert.equal(Bytes1.fromSignedInteger(-1n).toSignedBigint(), -1n)
-	assert.equal(Bytes1.fromHexString('ff').toSignedBigint(), -1n)
-	assert.equal(Bytes1.fromHexString('ff').toUnsignedBigint(), 255n)
-	assert.throws(() => Bytes1.fromUnsignedInteger(256n))
-	assert.equalBytes(new Bytes1(), [0x00])
+	assert.equalBytes(Bytes.fromUnsignedInteger(0n, 8), [0x00])
+	assert.equalBytes(Bytes.fromUnsignedInteger(0n, 256), [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+	assert.equalBytes(Bytes.fromSignedInteger(0n, 8), [0x00])
+	assert.equalBytes(Bytes.fromUnsignedInteger(1n, 8), [0x01])
+	assert.equalBytes(Bytes.fromSignedInteger(1n, 8), [0x01])
+	assert.equalBytes(Bytes.fromSignedInteger(-1n, 8), [0xff])
+	assert.equalBytes(Bytes.fromHexString('0x00'), [0x00])
+	assert.equalBytes(Bytes.fromHexString('00'), [0x00])
+	assert.equalBytes(Bytes.fromHexString('0x000000'), [0x00, 0x00, 0x00])
+	assert.equalBytes(Bytes.fromHexString('00000000'), [0x00, 0x00, 0x00, 0x00])
+	assert.equalBytes(new Bytes(1), [0x00])
+	assert.equal(new Bytes(1).to0xString(), '0x00')
+	assert.equal(new Bytes(1).toString(), '00')
+	assert.equal(new Bytes(1).toUnsignedBigint(), 0n)
+	assert.equal(new Bytes(1).toSignedBigint(), 0n)
+	assert.equal(Bytes.fromUnsignedInteger(1n, 8).toUnsignedBigint(), 1n)
+	assert.equal(Bytes.fromSignedInteger(1n, 8).toSignedBigint(), 1n)
+	assert.equal(Bytes.fromSignedInteger(-1n, 8).toSignedBigint(), -1n)
+	assert.equal(Bytes.fromHexString('ff').toSignedBigint(), -1n)
+	assert.equal(Bytes.fromHexString('ff').toUnsignedBigint(), 255n)
+	assert.throws(() => Bytes.fromUnsignedInteger(256n, 8))
+	assert.equalBytes(new Bytes(1), [0x00])
 	assert.equalBytes(Bytes.fromHexString('0x'), [])
 	assert.equalBytes(Bytes.fromHexString(''), [])
 }
@@ -61,28 +61,28 @@ function testTransactionReceipt() {
 		"transactionIndex": "0x4" // 4
 	}
 	const sampleTransactionReceipt = new TransactionReceipt(sampleRawTransactionReceipt)
-	assert.equalBytes(sampleTransactionReceipt.blockHash, 'b10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10c')
+	assert.equal(sampleTransactionReceipt.blockHash, 0xb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cn)
 	assert.equal(sampleTransactionReceipt.blockNumber, 6886576)
 	assert.isNotNull(sampleTransactionReceipt.contractAddress)
-	assert.equalBytes(sampleTransactionReceipt.contractAddress!, 'baadf00dbaadf00dbaadf00dbaadf00dbaadf00d')
+	assert.equal(sampleTransactionReceipt.contractAddress!, 0xbaadf00dbaadf00dbaadf00dbaadf00dbaadf00dn)
 	assert.equal(sampleTransactionReceipt.cumulativeGasUsed, 1412659)
-	assert.equalBytes(sampleTransactionReceipt.from, 'babebabebabebabebabebabebabebabebabebabe')
+	assert.equal(sampleTransactionReceipt.from, 0xbabebabebabebabebabebabebabebabebabebaben)
 	assert.equal(sampleTransactionReceipt.gasUsed, 762598)
-	assert.equalBytes(sampleTransactionReceipt.hash, 'cafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeef')
+	assert.equal(sampleTransactionReceipt.hash, 0xcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefn)
 	assert.equal(sampleTransactionReceipt.index, 4)
 	assert.equal(sampleTransactionReceipt.status, true)
 	assert.isNull(sampleTransactionReceipt.to)
-	assert.equalBytes(sampleTransactionReceipt.logsBloom, '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000')
+	assert.equal(sampleTransactionReceipt.logsBloom, 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000n)
 	assert.equal(sampleTransactionReceipt.logs.length, 1)
 	const sampleLog = sampleTransactionReceipt.logs[0]
-	assert.equalBytes(sampleLog.address, 'deadbabedeadbabedeadbabedeadbabedeadbabe')
-	assert.equalBytes(sampleLog.blockHash, 'b10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10c')
+	assert.equal(sampleLog.address, 0xdeadbabedeadbabedeadbabedeadbabedeadbaben)
+	assert.equal(sampleLog.blockHash, 0xb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cn)
 	assert.equal(sampleLog.blockNumber, 436)
 	assert.equalBytes(sampleLog.data, '0000000000000000000000000000000000000000000000000000000000000000')
 	assert.equal(sampleLog.logIndex, 1)
 	assert.equal(sampleLog.topics.length, 1)
-	assert.equalBytes(sampleLog.topics[0], 'deaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeafface')
-	assert.equalBytes(sampleLog.transactionHash, 'cafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeef')
+	assert.equal(sampleLog.topics[0], 0xdeaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeaffacen)
+	assert.equal(sampleLog.transactionHash, 0xcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefn)
 	assert.equal(sampleLog.transactionIndex, 0)
 }
 
@@ -110,18 +110,18 @@ function testTransaction() {
 		"value": "0x0"
 	}
 	const transaction = new Transaction(rawTransaction)
-	assert.equalBytes(transaction.blockHash!, 'd0007d3e0884b25c214aa15a0daeca341efeadfc46f9d323d4916b5ac4f87533')
+	assert.equal(transaction.blockHash!, 0xd0007d3e0884b25c214aa15a0daeca341efeadfc46f9d323d4916b5ac4f87533n)
 	assert.equal(transaction.blockNumber, 0x7a729b)
 	assert.equalBytes(transaction.data, 'a9059cbb0000000000000000000000002c55161d18a002307dc721d9bbc6502e1523e9b50000000000000000000000000000000000000000000000000000000000000050')
-	assert.equalBytes(transaction.from, 'fc15680a8423a540d33ca90c5e3616e93a032f94')
+	assert.equal(transaction.from, 0xfc15680a8423a540d33ca90c5e3616e93a032f94n)
 	assert.equal(transaction.gas, 0xc801)
 	assert.equal(transaction.gasPrice, 0x98bca5a00n)
-	assert.equalBytes(transaction.hash, '55066e2f47b7fdede6ab6f4a1abb026d9e7bbff94259d2e8da8ed7fb40e87673')
+	assert.equal(transaction.hash, 0x55066e2f47b7fdede6ab6f4a1abb026d9e7bbff94259d2e8da8ed7fb40e87673n)
 	assert.equal(transaction.index, 0)
 	assert.equal(transaction.nonce, 0x35d)
 	assert.equal(transaction.r, 0x7bb1ee45cab7da0a651ad45f3b28f4f1503125132d35c211648139cedbd99bbbn)
 	assert.equal(transaction.s, 0x5257df01b2ec8b3384344f29b4c03c1715c1eee30e9c3fd82c0b29691344200en)
-	assert.equalBytes(transaction.to!, 'd9dbe80995dbe64e371464b94d78baf10a694ed0')
+	assert.equal(transaction.to!, 0xd9dbe80995dbe64e371464b94d78baf10a694ed0n)
 	assert.equal(transaction.v, 0x26n)
 	assert.equal(transaction.value, 0n)
 }
@@ -248,27 +248,27 @@ function testBlock() {
 		"uncles": []
 	}
 	const block = new Block(rawBlock)
-	assert.equalBytes(block.author, '5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c')
+	assert.equal(block.author, 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4cn)
 	assert.equal(block.difficulty, 0x78844c551bb64n)
 	assert.equalBytes(block.extraData, '5050594520737061726b706f6f6c2d6574682d636e2d687a32')
 	assert.equal(block.gasLimit, 0x7a1200)
 	assert.equal(block.gasUsed, 0x79d085)
-	assert.equalBytes(block.hash!, 'c2d892b79e5dd49ac92b09e4b3fdecad98e64d0abcd73adb9f942ae5fa6b858a')
+	assert.equal(block.hash!, 0xc2d892b79e5dd49ac92b09e4b3fdecad98e64d0abcd73adb9f942ae5fa6b858an)
 	assert.isNotNull(block.logsBloom)
-	assert.equalBytes(block.logsBloom!, '00c0c0420145010000490200301900000092000a45408440028000080008110080080a41000900b0400020014010050042002d008e800810005000320025011a040c00000026081008a41088080004002200146082040018c080400424500060022c000009002802201048502080000184033a08000830820044803405000819140001010101000008e2041404050031203654402130124085804290001048c820c08000225071809085009ec044030020180ca0048518000000082000220000000004028200000000050110221c0c2008000a0140081002000880820c81001e20062000004901008850629404012004102108000001d4000404110902000021')
-	assert.equalBytes(block.miner, '5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c')
+	assert.equal(block.logsBloom!, 0x00c0c0420145010000490200301900000092000a45408440028000080008110080080a41000900b0400020014010050042002d008e800810005000320025011a040c00000026081008a41088080004002200146082040018c080400424500060022c000009002802201048502080000184033a08000830820044803405000819140001010101000008e2041404050031203654402130124085804290001048c820c08000225071809085009ec044030020180ca0048518000000082000220000000004028200000000050110221c0c2008000a0140081002000880820c81001e20062000004901008850629404012004102108000001d4000404110902000021n)
+	assert.equal(block.miner, 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4cn)
 	assert.equal(block.nonce, 0x8a7ec0380d2e65f1n)
 	assert.equal(block.number, 0x7a876d)
-	assert.equalBytes(block.parentHash, 'cf512261ac81443eaadfd1b92bbcd73d053f3b4bcc6004fe6da4f148120e8da9')
-	assert.equalBytes(block.receiptsRoot, '13b6265c328b199e3eb30b29a17e0da9d77991630ff7d20d58f201881854e244')
-	assert.equalBytes(block.sha3Uncles, '1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347')
+	assert.equal(block.parentHash, 0xcf512261ac81443eaadfd1b92bbcd73d053f3b4bcc6004fe6da4f148120e8da9n)
+	assert.equal(block.receiptsRoot, 0x13b6265c328b199e3eb30b29a17e0da9d77991630ff7d20d58f201881854e244n)
+	assert.equal(block.sha3Uncles, 0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347n)
 	assert.equal(block.size, 0x2e23)
-	assert.equalBytes(block.stateRoot, '0f5c0beb0a2d2e9d5af0c8de1d43642d52933677320d5b490fb13d6bb496f816')
+	assert.equal(block.stateRoot, 0x0f5c0beb0a2d2e9d5af0c8de1d43642d52933677320d5b490fb13d6bb496f816n)
 	assert.equalTime(block.timestamp, new Date(0x5d12ac07 * 1000))
 	assert.equal(block.totalDifficulty, 0x246e0f10a832a4c2d73n)
 	assert.equal(block.transactions.length, 92)
-	assert.equalBytes(block.transactions[0] as Bytes32, '36752158b33526c07a6dd016153f2c734f71f714363bcc21161806e7ceb18430')
-	assert.equalBytes(block.transactionsRoot, '0e999f06814a61a5d23f99adeee92911f782b551580a08bb5c8d6fc3519573d4')
+	assert.equal(block.transactions[0] as bigint, 0x36752158b33526c07a6dd016153f2c734f71f714363bcc21161806e7ceb18430n)
+	assert.equal(block.transactionsRoot, 0x0e999f06814a61a5d23f99adeee92911f782b551580a08bb5c8d6fc3519573d4n)
 	assert.equal(block.uncles.length, 0)
 }
 
@@ -293,8 +293,8 @@ function testWireEncoding() {
 	assert.equal(wireEncodeBlockTag('latest'), 'latest')
 	assert.equal(wireEncodeBlockTag(0xabcd), '0xabcd')
 	assert.deepEqual(wireEncodeOffChainTransaction({
-		from: Address.fromHexString('deadbabedeadbabedeadbabedeadbabedeadbabe'),
-		to: Address.fromHexString('cafebeefcafebeefcafebeefcafebeefcafebeef'),
+		from: 0xdeadbabedeadbabedeadbabedeadbabedeadbaben,
+		to: 0xcafebeefcafebeefcafebeefcafebeefcafebeefn,
 		data: new Bytes(),
 		value: 0n,
 		gasLimit: 100_000,
@@ -308,8 +308,8 @@ function testWireEncoding() {
 		gasPrice: '0x7744d640',
 	})
 	assert.deepEqual(wireEncodeOnChainTransaction({
-		from: Address.fromHexString('deadbabedeadbabedeadbabedeadbabedeadbabe'),
-		to: Address.fromHexString('cafebeefcafebeefcafebeefcafebeefcafebeef'),
+		from: 0xdeadbabedeadbabedeadbabedeadbabedeadbaben,
+		to: 0xcafebeefcafebeefcafebeefcafebeefcafebeefn,
 		data: new Bytes(),
 		value: 0n,
 		gasLimit: 100_000,

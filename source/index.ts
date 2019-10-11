@@ -1,18 +1,16 @@
-abstract class ByteArray extends Uint8Array {
-	public static readonly size: number | null
-
-	public static fromByteArray<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, bytes: BytesLike, pad: 'left' | 'right' = 'right'): InstanceType<TConstructor> {
-		const result = (this.size) ? new this() : new this(bytes.length)
+export class Bytes extends Uint8Array {
+	public static fromByteArray(bytes: ArrayLike<number>, pad: 'left' | 'right' = 'right'): Bytes {
+		const result = new this(bytes.length)
 		if (bytes.length > result.length) throw new Error(`Source bytes are longer (${bytes.length}) than destination bytes (${result.length})\n${bytes}`)
 		for (let i = 0; i < bytes.length; ++i) {
 			const byte = bytes[i]
 			if (byte > 0xff || byte < 0) throw new Error(`Source array must only include numbers between 0 and ${0xff}.\n${bytes}`)
 		}
 		result.set(bytes, (pad === 'left') ? result.length - bytes.length : 0)
-		return result as InstanceType<TConstructor>
+		return result
 	}
 
-	public static fromHexString<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, hex: string, pad?: 'left' | 'right'): InstanceType<TConstructor> {
+	public static fromHexString(hex: string, pad?: 'left' | 'right'): Bytes {
 		const match = /^(?:0x)?([a-fA-F0-9]*)$/.exec(hex)
 		if (match === null) throw new Error(`Expected a hex string encoded byte array with an optional '0x' prefix but received ${hex}`)
 		const normalized = match[1]
@@ -24,15 +22,12 @@ abstract class ByteArray extends Uint8Array {
 		return this.fromByteArray(bytes, pad)
 	}
 
-	public static fromStringLiteral<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, literal: string): InstanceType<TConstructor> {
+	public static fromStringLiteral(literal: string): Bytes {
 		const encoded = new TextEncoder().encode(literal)
 		return this.fromByteArray(encoded)
 	}
 
-	public static fromUnsignedInteger<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, value: bigint | number, numberOfBits?: number): InstanceType<TConstructor> {
-		if (numberOfBits === undefined && this.size === null) throw new Error(`Must supply numberOfBits when initializing a variable sized ByteArray.`)
-		if (numberOfBits !== undefined && this.size !== null) throw new Error(`Must not supply numberOfBits when initializing a fixed size ByteArray.`)
-		numberOfBits = numberOfBits || (this.size! * 8)
+	public static fromUnsignedInteger(value: bigint | number, numberOfBits: number): Bytes {
 		if (numberOfBits % 8) throw new Error(`numberOfBits must be a multiple of 8.`)
 		if (typeof value === 'number') value = BigInt(value)
 		if (value >= 2n ** BigInt(numberOfBits) || value < 0n) throw new Error(`Cannot fit ${value} into a ${numberOfBits}-bit unsigned integer.`)
@@ -42,16 +37,13 @@ abstract class ByteArray extends Uint8Array {
 		for (let i = 0; i < result.length; ++i) {
 			result[i] = Number((value >> BigInt(numberOfBits - i * 8 - 8)) & 0xffn)
 		}
-		return result as InstanceType<TConstructor>
+		return result
 	}
 
-	public static fromSignedInteger<TConstructor extends typeof ByteArray & { new(): InstanceType<TConstructor> }>(this: TConstructor, value: bigint | number, numberOfBits?: number): InstanceType<TConstructor> {
-		if (numberOfBits === undefined && this.size === null) throw new Error(`Must supply numberOfBits when initializing a variable sized ByteArray.`)
-		if (numberOfBits !== undefined && this.size !== null) throw new Error(`Must not supply numberOfBits when initializing a fixed size ByteArray.`)
-		const numBits = numberOfBits || (this.size! * 8)
+	public static fromSignedInteger(value: bigint | number, numberOfBits: number): Bytes {
 		if (typeof value === 'number') value = BigInt(value)
-		if (value >= 2n ** BigInt(numBits - 1) || value < -(2n ** BigInt(numBits - 1))) throw new Error(`Cannot fit ${value} into a ${numBits}-bit signed integer.`)
-		const unsignedValue = this.twosComplement(value, numBits)
+		if (value >= 2n ** BigInt(numberOfBits - 1) || value < -(2n ** BigInt(numberOfBits - 1))) throw new Error(`Cannot fit ${value} into a ${numberOfBits}-bit signed integer.`)
+		const unsignedValue = this.twosComplement(value, numberOfBits)
 		return this.fromUnsignedInteger(unsignedValue, numberOfBits)
 	}
 
@@ -69,7 +61,7 @@ abstract class ByteArray extends Uint8Array {
 
 	public readonly toSignedBigint = () => {
 		const unsignedValue = this.toUnsignedBigint()
-		return ByteArray.twosComplement(unsignedValue, this.length * 8)
+		return Bytes.twosComplement(unsignedValue, this.length * 8)
 	}
 
 	public readonly equals = (other: { length: number, [i: number]: number } | undefined | null): boolean => {
@@ -89,120 +81,11 @@ abstract class ByteArray extends Uint8Array {
 		return (value & mask) - (value & ~mask)
 	}
 }
-export class Bytes extends ByteArray { Bytes: unknown; static size = null }
-export class Bytes256 extends ByteArray { constructor() { super(256) }; static size = 256; Bytes256: unknown }
-export class Bytes32 extends ByteArray { constructor() { super(32) }; static size = 32; Bytes32: unknown }
-export class Bytes31 extends ByteArray { constructor() { super(31) }; static size = 31; Bytes31: unknown }
-export class Bytes30 extends ByteArray { constructor() { super(30) }; static size = 30; Bytes30: unknown }
-export class Bytes29 extends ByteArray { constructor() { super(29) }; static size = 29; Bytes29: unknown }
-export class Bytes28 extends ByteArray { constructor() { super(28) }; static size = 28; Bytes28: unknown }
-export class Bytes27 extends ByteArray { constructor() { super(27) }; static size = 27; Bytes27: unknown }
-export class Bytes26 extends ByteArray { constructor() { super(26) }; static size = 26; Bytes26: unknown }
-export class Bytes25 extends ByteArray { constructor() { super(25) }; static size = 25; Bytes25: unknown }
-export class Bytes24 extends ByteArray { constructor() { super(24) }; static size = 24; Bytes24: unknown }
-export class Bytes23 extends ByteArray { constructor() { super(23) }; static size = 23; Bytes23: unknown }
-export class Bytes22 extends ByteArray { constructor() { super(22) }; static size = 22; Bytes22: unknown }
-export class Bytes21 extends ByteArray { constructor() { super(21) }; static size = 21; Bytes21: unknown }
-export class Bytes20 extends ByteArray { constructor() { super(20) }; static size = 20; Bytes20: unknown }
-export class Bytes19 extends ByteArray { constructor() { super(19) }; static size = 19; Bytes19: unknown }
-export class Bytes18 extends ByteArray { constructor() { super(18) }; static size = 18; Bytes18: unknown }
-export class Bytes17 extends ByteArray { constructor() { super(17) }; static size = 17; Bytes17: unknown }
-export class Bytes16 extends ByteArray { constructor() { super(16) }; static size = 16; Bytes16: unknown }
-export class Bytes15 extends ByteArray { constructor() { super(15) }; static size = 15; Bytes15: unknown }
-export class Bytes14 extends ByteArray { constructor() { super(14) }; static size = 14; Bytes14: unknown }
-export class Bytes13 extends ByteArray { constructor() { super(13) }; static size = 13; Bytes13: unknown }
-export class Bytes12 extends ByteArray { constructor() { super(12) }; static size = 12; Bytes12: unknown }
-export class Bytes11 extends ByteArray { constructor() { super(11) }; static size = 11; Bytes11: unknown }
-export class Bytes10 extends ByteArray { constructor() { super(10) }; static size = 10; Bytes10: unknown }
-export class Bytes9 extends ByteArray { constructor() { super(9) }; static size = 9; Bytes9: unknown }
-export class Bytes8 extends ByteArray { constructor() { super(8) }; static size = 8; Bytes8: unknown }
-export class Bytes7 extends ByteArray { constructor() { super(7) }; static size = 7; Bytes7: unknown }
-export class Bytes6 extends ByteArray { constructor() { super(6) }; static size = 6; Bytes6: unknown }
-export class Bytes5 extends ByteArray { constructor() { super(5) }; static size = 5; Bytes5: unknown }
-export class Bytes4 extends ByteArray { constructor() { super(4) }; static size = 4; Bytes4: unknown }
-export class Bytes3 extends ByteArray { constructor() { super(3) }; static size = 3; Bytes3: unknown }
-export class Bytes2 extends ByteArray { constructor() { super(2) }; static size = 2; Bytes2: unknown }
-export class Bytes1 extends ByteArray { constructor() { super(1) }; static size = 1; Bytes1: unknown }
-export class Address extends ByteArray { constructor() { super(20) }; static size = 20; Address: unknown }
-export class MethodSignatureHash extends ByteArray { constructor() { super(4) }; static size = 4; SignatureHash: unknown }
-export class EncodedSignature extends ByteArray { constructor() { super(65) }; static size = 65; EncodedSignature: unknown }
-export interface Bytes32 { readonly length: 32 }
-export interface Bytes31 { readonly length: 31 }
-export interface Bytes30 { readonly length: 30 }
-export interface Bytes29 { readonly length: 29 }
-export interface Bytes28 { readonly length: 28 }
-export interface Bytes27 { readonly length: 27 }
-export interface Bytes26 { readonly length: 26 }
-export interface Bytes25 { readonly length: 25 }
-export interface Bytes24 { readonly length: 24 }
-export interface Bytes23 { readonly length: 23 }
-export interface Bytes22 { readonly length: 22 }
-export interface Bytes21 { readonly length: 21 }
-export interface Bytes20 { readonly length: 20 }
-export interface Bytes19 { readonly length: 19 }
-export interface Bytes18 { readonly length: 18 }
-export interface Bytes17 { readonly length: 17 }
-export interface Bytes16 { readonly length: 16 }
-export interface Bytes15 { readonly length: 15 }
-export interface Bytes14 { readonly length: 14 }
-export interface Bytes13 { readonly length: 13 }
-export interface Bytes12 { readonly length: 12 }
-export interface Bytes11 { readonly length: 11 }
-export interface Bytes10 { readonly length: 10 }
-export interface Bytes9 { readonly length: 9 }
-export interface Bytes8 { readonly length: 8 }
-export interface Bytes7 { readonly length: 7 }
-export interface Bytes6 { readonly length: 6 }
-export interface Bytes5 { readonly length: 5 }
-export interface Bytes4 { readonly length: 4 }
-export interface Bytes3 { readonly length: 3 }
-export interface Bytes2 { readonly length: 2 }
-export interface Bytes1 { readonly length: 1 }
-export interface Address { readonly length: 20 }
-export interface MethodSignatureHash { readonly length: 4 }
-export interface EncodedSignature { readonly length: 65 }
-export type BytesLike = ArrayLike<number>
-export type Bytes256Like = BytesLike & { length: 256 }
-export type Bytes32Like = BytesLike & { length: 32 }
-export type Bytes31Like = BytesLike & { length: 31 }
-export type Bytes30Like = BytesLike & { length: 30 }
-export type Bytes29Like = BytesLike & { length: 29 }
-export type Bytes28Like = BytesLike & { length: 28 }
-export type Bytes27Like = BytesLike & { length: 27 }
-export type Bytes26Like = BytesLike & { length: 26 }
-export type Bytes25Like = BytesLike & { length: 25 }
-export type Bytes24Like = BytesLike & { length: 24 }
-export type Bytes23Like = BytesLike & { length: 23 }
-export type Bytes22Like = BytesLike & { length: 22 }
-export type Bytes21Like = BytesLike & { length: 21 }
-export type Bytes20Like = BytesLike & { length: 20 }
-export type Bytes19Like = BytesLike & { length: 19 }
-export type Bytes18Like = BytesLike & { length: 18 }
-export type Bytes17Like = BytesLike & { length: 17 }
-export type Bytes16Like = BytesLike & { length: 16 }
-export type Bytes15Like = BytesLike & { length: 15 }
-export type Bytes14Like = BytesLike & { length: 14 }
-export type Bytes13Like = BytesLike & { length: 13 }
-export type Bytes12Like = BytesLike & { length: 12 }
-export type Bytes11Like = BytesLike & { length: 11 }
-export type Bytes10Like = BytesLike & { length: 10 }
-export type Bytes9Like = BytesLike & { length: 9 }
-export type Bytes8Like = BytesLike & { length: 8 }
-export type Bytes7Like = BytesLike & { length: 7 }
-export type Bytes6Like = BytesLike & { length: 6 }
-export type Bytes5Like = BytesLike & { length: 5 }
-export type Bytes4Like = BytesLike & { length: 4 }
-export type Bytes3Like = BytesLike & { length: 3 }
-export type Bytes2Like = BytesLike & { length: 2 }
-export type Bytes1Like = BytesLike & { length: 1 }
-export type AddressLike = BytesLike & { length: 20 }
-export type MethodSignatureHashLike = BytesLike & { length: 4 }
 
 export type Encodable = EncodablePrimitive | EncodableTuple | EncodableArray
-export type EncodablePrimitive = BytesLike | string | boolean | bigint
+export type EncodablePrimitive = Uint8Array | string | boolean | bigint
 export interface EncodableTuple { readonly [x: string]: Encodable }
-export interface EncodableArray extends ArrayLike<Encodable> { }
-export type FixedBytesLike = Bytes32Like | Bytes31Like | Bytes30Like | Bytes29Like | Bytes28Like | Bytes27Like | Bytes26Like | Bytes25Like | Bytes24Like | Bytes23Like | Bytes22Like | Bytes21Like | Bytes20Like | Bytes19Like | Bytes18Like | Bytes17Like | Bytes16Like | Bytes15Like | Bytes14Like | Bytes13Like | Bytes12Like | Bytes11Like | Bytes10Like | Bytes9Like | Bytes8Like | Bytes7Like | Bytes6Like | Bytes5Like | Bytes4Like | Bytes3Like | Bytes2Like | Bytes1Like
+export interface EncodableArray extends ReadonlyArray<Encodable> { }
 
 export type RawHash = string
 export type RawQuantity = string
@@ -299,91 +182,91 @@ export interface RawOnChainTransaction extends RawOffChainTransaction {
 	readonly nonce: RawQuantity
 }
 
-export interface ILog<TBytes32, TAddress, TBytes> {
-	readonly blockHash: TBytes32
+export interface ILog {
+	readonly blockHash: bigint
 	readonly blockNumber: number
-	readonly transactionHash: TBytes32
+	readonly transactionHash: bigint
 	readonly transactionIndex: number
 	readonly logIndex: number
-	readonly address: TAddress
-	readonly topics: Array<TBytes32>
-	readonly data: TBytes
+	readonly address: bigint
+	readonly topics: Array<bigint>
+	readonly data: Uint8Array
 }
 
-export class Log implements ILog<Bytes32, Address, Bytes> {
-	public readonly blockHash: Bytes32
+export class Log implements ILog {
+	public readonly blockHash: bigint
 	public readonly blockNumber: number
-	public readonly transactionHash: Bytes32
+	public readonly transactionHash: bigint
 	public readonly transactionIndex: number
 	public readonly logIndex: number
-	public readonly address: Address
-	public readonly topics: Array<Bytes32>
+	public readonly address: bigint
+	public readonly topics: Array<bigint>
 	public readonly data: Bytes
 	public constructor(raw: RawLog) {
-		this.blockHash = Bytes32.fromHexString(raw.blockHash)
+		this.blockHash = BigInt(raw.blockHash)
 		this.blockNumber = Number.parseInt(raw.blockNumber, 16)
-		this.transactionHash = Bytes32.fromHexString(raw.transactionHash)
+		this.transactionHash = BigInt(raw.transactionHash)
 		this.transactionIndex = Number.parseInt(raw.transactionIndex, 16)
 		this.logIndex = Number.parseInt(raw.logIndex, 16)
-		this.address = Address.fromHexString(raw.address)
-		this.topics = raw.topics.map(x => Bytes32.fromHexString(x))
+		this.address = BigInt(raw.address)
+		this.topics = raw.topics.map(x => BigInt(x))
 		this.data = Bytes.fromHexString(raw.data)
 	}
 }
 
-export interface ITransactionReceipt<TBytes32, TAddress, TLog, TBytes256> {
-	readonly blockHash: TBytes32
+export interface ITransactionReceipt {
+	readonly blockHash: bigint
 	readonly blockNumber: number
-	readonly hash: TBytes32
+	readonly hash: bigint
 	readonly index: number
-	readonly from: TAddress
-	readonly to: TAddress | null
-	readonly contractAddress: TAddress | null
+	readonly from: bigint
+	readonly to: bigint | null
+	readonly contractAddress: bigint | null
 	readonly cumulativeGasUsed: number
 	readonly gasUsed: number
-	readonly logs: Array<TLog>
-	readonly logsBloom: TBytes256
+	readonly logs: Array<ILog>
+	readonly logsBloom: bigint
 	readonly status: boolean
 }
 
-export class TransactionReceipt implements ITransactionReceipt<Bytes32, Address, Log, Bytes256> {
-	public readonly blockHash: Bytes32
+export class TransactionReceipt implements ITransactionReceipt {
+	public readonly blockHash: bigint
 	public readonly blockNumber: number
-	public readonly hash: Bytes32
+	public readonly hash: bigint
 	public readonly index: number
-	public readonly from: Address
-	public readonly to: Address | null
-	public readonly contractAddress: Address | null
+	public readonly from: bigint
+	public readonly to: bigint | null
+	public readonly contractAddress: bigint | null
 	public readonly cumulativeGasUsed: number
 	public readonly gasUsed: number
 	public readonly logs: Array<Log>
-	public readonly logsBloom: Bytes256
+	public readonly logsBloom: bigint
 	public readonly status: boolean
 	public constructor(raw: RawTransactionReceipt) {
-		this.blockHash = Bytes32.fromHexString(raw.blockHash)
+		this.blockHash = BigInt(raw.blockHash)
 		this.blockNumber = Number.parseInt(raw.blockNumber, 16)
-		this.hash = Bytes32.fromHexString(raw.transactionHash)
+		this.hash = BigInt(raw.transactionHash)
 		this.index = Number.parseInt(raw.transactionIndex, 16)
-		this.from = Address.fromHexString(raw.from)
-		this.to = (raw.to) ? Address.fromHexString(raw.to!) : null
-		this.contractAddress = (raw.contractAddress) ? Address.fromHexString(raw.contractAddress) : null
+		this.from = BigInt(raw.from)
+		this.to = (raw.to) ? BigInt(raw.to!) : null
+		this.contractAddress = (raw.contractAddress) ? BigInt(raw.contractAddress) : null
 		this.cumulativeGasUsed = Number.parseInt(raw.cumulativeGasUsed, 16)
 		this.gasUsed = Number.parseInt(raw.gasUsed, 16)
 		this.logs = raw.logs.map(x => new Log(x))
-		this.logsBloom = Bytes256.fromHexString(raw.logsBloom)
+		this.logsBloom = BigInt(raw.logsBloom)
 		this.status = !!Number.parseInt(raw.status, 16)
 	}
 }
 
-export interface ITransaction<TBytes32, TAddress, TBytes> {
-	readonly blockHash: TBytes32 | null
+export interface ITransaction {
+	readonly blockHash: bigint | null
 	readonly blockNumber: number | null
-	readonly hash: TBytes32
+	readonly hash: bigint
 	readonly index: number | null
-	readonly from: TAddress
-	readonly to: TAddress | null
+	readonly from: bigint
+	readonly to: bigint | null
 	readonly value: bigint
-	readonly data: TBytes
+	readonly data: Uint8Array
 	readonly nonce: number
 	readonly gas: number
 	readonly gasPrice: bigint
@@ -392,13 +275,13 @@ export interface ITransaction<TBytes32, TAddress, TBytes> {
 	readonly v: bigint
 }
 
-export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
-	public readonly blockHash: Bytes32 | null
+export class Transaction implements ITransaction {
+	public readonly blockHash: bigint | null
 	public readonly blockNumber: number | null
-	public readonly hash: Bytes32
+	public readonly hash: bigint
 	public readonly index: number | null
-	public readonly from: Address
-	public readonly to: Address | null
+	public readonly from: bigint
+	public readonly to: bigint | null
 	public readonly value: bigint
 	public readonly data: Bytes
 	public readonly nonce: number
@@ -408,12 +291,12 @@ export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
 	public readonly s: bigint
 	public readonly v: bigint
 	public constructor(raw: RawTransaction) {
-		this.blockHash = (raw.blockHash !== null) ? Bytes32.fromHexString(raw.blockHash) : null
+		this.blockHash = (raw.blockHash !== null) ? BigInt(raw.blockHash) : null
 		this.blockNumber = (raw.blockNumber !== null) ? Number.parseInt(raw.blockNumber, 16) : null
-		this.hash = Bytes32.fromHexString(raw.hash)
+		this.hash = BigInt(raw.hash)
 		this.index = (raw.transactionIndex !== null) ? Number.parseInt(raw.transactionIndex, 16) : null
-		this.from = Address.fromHexString(raw.from)
-		this.to = (raw.to !== null) ? Address.fromHexString(raw.to) : null
+		this.from = BigInt(raw.from)
+		this.to = (raw.to !== null) ? BigInt(raw.to) : null
 		this.value = BigInt(raw.value)
 		this.data = Bytes.fromHexString(raw.input)
 		this.nonce = Number.parseInt(raw.nonce)
@@ -425,41 +308,41 @@ export class Transaction implements ITransaction<Bytes32, Address, Bytes> {
 	}
 }
 
-export interface IBlock<TBytes, TBytes32, TBytes256, TAddress, TTransaction> {
-	readonly hash: TBytes32 | null
+export interface IBlock {
+	readonly hash: bigint | null
 	readonly number: number | null
 	readonly nonce: bigint | null
-	readonly logsBloom: TBytes256 | null
-	readonly parentHash: TBytes32
-	readonly sha3Uncles: TBytes32
-	readonly transactionsRoot: TBytes32
-	readonly stateRoot: TBytes32
-	readonly receiptsRoot: TBytes32
-	readonly author: TAddress
-	readonly miner: TAddress
+	readonly logsBloom: bigint | null
+	readonly parentHash: bigint
+	readonly sha3Uncles: bigint
+	readonly transactionsRoot: bigint
+	readonly stateRoot: bigint
+	readonly receiptsRoot: bigint
+	readonly author: bigint
+	readonly miner: bigint
 	readonly difficulty: bigint
 	readonly totalDifficulty: bigint
-	readonly extraData: TBytes
+	readonly extraData: Uint8Array
 	readonly size: number
 	readonly gasLimit: number
 	readonly gasUsed: number
 	readonly timestamp: Date
-	readonly transactions: Array<TTransaction | TBytes32>
-	readonly uncles: Array<TBytes32>
+	readonly transactions: Array<ITransaction | bigint>
+	readonly uncles: Array<bigint>
 }
 
-export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transaction> {
-	public readonly hash: Bytes32 | null
+export class Block implements IBlock {
+	public readonly hash: bigint | null
 	public readonly number: number | null
 	public readonly nonce: bigint | null
-	public readonly logsBloom: Bytes256 | null
-	public readonly parentHash: Bytes32
-	public readonly sha3Uncles: Bytes32
-	public readonly transactionsRoot: Bytes32
-	public readonly stateRoot: Bytes32
-	public readonly receiptsRoot: Bytes32
-	public readonly author: Address
-	public readonly miner: Address
+	public readonly logsBloom: bigint | null
+	public readonly parentHash: bigint
+	public readonly sha3Uncles: bigint
+	public readonly transactionsRoot: bigint
+	public readonly stateRoot: bigint
+	public readonly receiptsRoot: bigint
+	public readonly author: bigint
+	public readonly miner: bigint
 	public readonly difficulty: bigint
 	public readonly totalDifficulty: bigint
 	public readonly extraData: Bytes
@@ -467,20 +350,20 @@ export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transact
 	public readonly gasLimit: number
 	public readonly gasUsed: number
 	public readonly timestamp: Date
-	public readonly transactions: Array<Transaction | Bytes32>
-	public readonly uncles: Array<Bytes32>
+	public readonly transactions: Array<Transaction | bigint>
+	public readonly uncles: Array<bigint>
 	public constructor(raw: RawBlock) {
-		this.hash = (raw.hash !== null) ? Bytes32.fromHexString(raw.hash) : null
+		this.hash = (raw.hash !== null) ? BigInt(raw.hash) : null
 		this.number = (raw.number !== null) ? Number.parseInt(raw.number, 16) : null
 		this.nonce = (raw.nonce !== null) ? BigInt(raw.nonce) : null
-		this.logsBloom = (raw.logsBloom !== null) ? Bytes256.fromHexString(raw.logsBloom) : null
-		this.parentHash = Bytes32.fromHexString(raw.parentHash)
-		this.sha3Uncles = Bytes32.fromHexString(raw.sha3Uncles)
-		this.transactionsRoot = Bytes32.fromHexString(raw.transactionsRoot)
-		this.stateRoot = Bytes32.fromHexString(raw.stateRoot)
-		this.receiptsRoot = Bytes32.fromHexString(raw.receiptsRoot)
-		this.author = Address.fromHexString(raw.author)
-		this.miner = Address.fromHexString(raw.miner)
+		this.logsBloom = (raw.logsBloom !== null) ? BigInt(raw.logsBloom) : null
+		this.parentHash = BigInt(raw.parentHash)
+		this.sha3Uncles = BigInt(raw.sha3Uncles)
+		this.transactionsRoot = BigInt(raw.transactionsRoot)
+		this.stateRoot = BigInt(raw.stateRoot)
+		this.receiptsRoot = BigInt(raw.receiptsRoot)
+		this.author = BigInt(raw.author)
+		this.miner = BigInt(raw.miner)
 		this.difficulty = BigInt(raw.difficulty)
 		this.totalDifficulty = BigInt(raw.totalDifficulty)
 		this.extraData = Bytes.fromHexString(raw.extraData)
@@ -488,8 +371,8 @@ export class Block implements IBlock<Bytes, Bytes32, Bytes256, Address, Transact
 		this.gasLimit = Number.parseInt(raw.gasLimit, 16)
 		this.gasUsed = Number.parseInt(raw.gasUsed, 16)
 		this.timestamp = new Date(Number.parseInt(raw.timestamp, 16) * 1000)
-		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? Bytes32.fromHexString(x) : new Transaction(x))
-		this.uncles = raw.uncles.map(x => Bytes32.fromHexString(x))
+		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? BigInt(x) : new Transaction(x))
+		this.uncles = raw.uncles.map(x => BigInt(x))
 	}
 }
 
@@ -499,28 +382,28 @@ export interface ISignature {
 	readonly v: bigint
 }
 
-export interface IOffChainTransaction<TAddress, TBytes> {
-	readonly from: TAddress
-	readonly to: TAddress | null
+export interface IOffChainTransaction {
+	readonly from: bigint
+	readonly to: bigint | null
 	readonly value: bigint
-	readonly data: TBytes
+	readonly data: Uint8Array
 	readonly gasLimit: number | null
 	readonly gasPrice: bigint
 }
 
-export interface IOnChainTransaction<TAddress, TBytes> extends IOffChainTransaction<TAddress, TBytes> {
+export interface IOnChainTransaction extends IOffChainTransaction {
 	readonly gasLimit: number
 	readonly nonce: number
 }
 
-export interface IUnsignedTransaction<TAddress, TBytes> extends IOnChainTransaction<TAddress, TBytes> {
+export interface IUnsignedTransaction extends IOnChainTransaction {
 	readonly chainId: number
 }
 
-export interface ISignedTransaction<TAddress, TBytes> extends IUnsignedTransaction<TAddress, TBytes>, ISignature {
+export interface ISignedTransaction extends IOnChainTransaction, ISignature {
 }
 
-export function wireEncodeByteArray(bytes: BytesLike): string {
+export function wireEncodeByteArray(bytes: ArrayLike<number>): string {
 	let result = ''
 	for (let i = 0; i < bytes.length; ++i) {
 		result += ('0' + bytes[i].toString(16)).slice(-2)
@@ -528,10 +411,20 @@ export function wireEncodeByteArray(bytes: BytesLike): string {
 	return `0x${result}`
 }
 
-export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction<AddressLike, BytesLike>): RawOffChainTransaction {
+export function wireEncodeNumber(value: number | bigint, padding: number = 0): RawQuantity {
+	if (value < 0) throw new Error(`Wire encoded values must be positive.  Received: ${value}`)
+	if (typeof value === 'number' && value > 2**52) throw new Error(`Wire encoded number values cannot be bigger than ${2**52}.  Received: ${value}`)
+	if (typeof value === 'bigint' && value >= 2**256) throw new Error(`Wire encoded bigint values must be smaller than ${2n**256n}.  Received: ${value}`)
+	return `0x${value.toString(16).padStart(padding, '0')}`
+}
+
+export type BlockTag = 'latest' | 'earliest' | 'pending' | number
+export function wireEncodeBlockTag(tag: BlockTag): RawBlockTag { return (typeof tag === 'string') ? tag : wireEncodeNumber(tag) }
+
+export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction): RawOffChainTransaction {
 	return {
-		from: wireEncodeByteArray(transaction.from),
-		to: transaction.to ? wireEncodeByteArray(transaction.to) : null,
+		from: wireEncodeNumber(transaction.from, 40),
+		to: transaction.to ? wireEncodeNumber(transaction.to, 40) : null,
 		value: wireEncodeNumber(transaction.value),
 		data: wireEncodeByteArray(transaction.data),
 		gas: transaction.gasLimit ? wireEncodeNumber(transaction.gasLimit) : null,
@@ -539,7 +432,7 @@ export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction<
 	}
 }
 
-export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction<AddressLike, BytesLike>): RawOnChainTransaction {
+export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction): RawOnChainTransaction {
 	return {
 		...wireEncodeOffChainTransaction(transaction),
 		nonce: wireEncodeNumber(transaction.nonce),
@@ -585,15 +478,6 @@ export function isJsonRpcError<T>(response: IJsonRpcResponse<T>): response is IJ
 	return !!(response as IJsonRpcError).error && !(response as IJsonRpcSuccess<T>).result
 }
 
-export function wireEncodeNumber(value: number | bigint): RawQuantity {
-	if (value < 0) throw new Error(`Wire encoded values must be positive.  Received: ${value}`)
-	if (typeof value === 'number' && value > 2**52) throw new Error(`Wire encoded number values cannot be bigger than ${2**52}.  Received: ${value}`)
-	if (typeof value === 'bigint' && value >= 2**256) throw new Error(`Wire encoded bigint values must be smaller than ${2n**256n}.  Received: ${value}`)
-	return `0x${value.toString(16)}`
-}
-export type BlockTag = 'latest' | 'earliest' | 'pending' | number
-export function wireEncodeBlockTag(tag: BlockTag): RawBlockTag { return (typeof tag === 'string') ? tag : wireEncodeNumber(tag) }
-
 export namespace Rpc {
 	export namespace Eth {
 		export namespace Accounts {
@@ -609,10 +493,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: Array<Address>
+				public readonly result: Array<bigint>
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = raw.result.map(x => Address.fromHexString(x))
+					this.result = raw.result.map(x => BigInt(x))
 				}
 			}
 		}
@@ -637,10 +521,10 @@ export namespace Rpc {
 		export namespace Call {
 			export interface RawRequest extends IJsonRpcRequest<'eth_call', [RawOffChainTransaction, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawData> { }
-			export class Request<TAddress extends AddressLike, TBytes extends BytesLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transaction: IOffChainTransaction<TAddress, TBytes>,
+					public readonly transaction: IOffChainTransaction,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
@@ -689,19 +573,19 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: Address
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Address.fromHexString(raw.result)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
 		export namespace EstimateGas {
 			export interface RawRequest extends IJsonRpcRequest<'eth_estimateGas', [RawOffChainTransaction, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
-			export class Request<TAddress extends AddressLike, TBytes extends BytesLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transaction: IOffChainTransaction<TAddress, TBytes>,
+					public readonly transaction: IOffChainTransaction,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
@@ -739,17 +623,17 @@ export namespace Rpc {
 		export namespace GetBalance {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getBalance', [RawAddress, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
-			export class Request<TAddress extends AddressLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly address: TAddress,
+					public readonly address: bigint,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getBalance',
-					params: [wireEncodeByteArray(this.address), wireEncodeBlockTag(this.blockTag)],
+					params: [wireEncodeNumber(this.address, 40), wireEncodeBlockTag(this.blockTag)],
 				})
 			}
 			export class Response {
@@ -762,17 +646,17 @@ export namespace Rpc {
 		export namespace GetBlockByHash {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getBlockByHash', [RawHash, boolean]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawBlock | null> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly hash: TBytes32,
+					public readonly hash: bigint,
 					public readonly fullTransactions: boolean = false,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getBlockByHash',
-					params: [wireEncodeByteArray(this.hash), this.fullTransactions],
+					params: [wireEncodeNumber(this.hash, 64), this.fullTransactions],
 				})
 			}
 			export class Response {
@@ -808,16 +692,16 @@ export namespace Rpc {
 		export namespace GetBlockTransactionCountByHash {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getBlockTransactionCountByHash', [RawHash]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly blockHash: TBytes32,
+					public readonly blockHash: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getBlockTransactionCountByHash',
-					params: [wireEncodeByteArray(this.blockHash)],
+					params: [wireEncodeNumber(this.blockHash, 64)],
 				})
 			}
 			export class Response {
@@ -852,17 +736,17 @@ export namespace Rpc {
 		export namespace GetCode {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getCode', [RawAddress, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawData> { }
-			export class Request<TAddress extends AddressLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly address: TAddress,
+					public readonly address: bigint,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getCode',
-					params: [wireEncodeByteArray(this.address), wireEncodeBlockTag(this.blockTag)],
+					params: [wireEncodeNumber(this.address, 40), wireEncodeBlockTag(this.blockTag)],
 				})
 			}
 			export class Response {
@@ -875,24 +759,24 @@ export namespace Rpc {
 		export namespace GetLogs {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getLogs', [{ address: RawAddress | Array<RawAddress>, topics: Array<RawHash> } & ({ fromBlock: RawBlockTag, toBlock: RawBlockTag } | { blockHash: RawHash })]> { }
 			export interface RawResponse extends IJsonRpcSuccess<Array<RawLog>> { }
-			export class Request<TAddress extends AddressLike, TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					id: string | number | null,
-					criteria: CriteriaTag<TAddress, TBytes32>,
+					criteria: CriteriaTag,
 				)
 				public constructor(
 					id: string | number | null,
-					criteria: CriteriaHash<TAddress, TBytes32>,
+					criteria: CriteriaHash,
 				)
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly criteria: Criteria<TAddress, TBytes32>
+					public readonly criteria: Criteria
 				){ }
 				public readonly wireEncode = (): RawRequest => {
-					const address = (Array.isArray(this.criteria.address)) ? this.criteria.address.map(x => wireEncodeByteArray(x)) : wireEncodeByteArray(this.criteria.address)
-					const topics = this.criteria.topics.map(x => wireEncodeByteArray(x))
+					const address = (Array.isArray(this.criteria.address)) ? this.criteria.address.map(x => wireEncodeNumber(x, 40)) : wireEncodeNumber(this.criteria.address, 40)
+					const topics = this.criteria.topics.map(x => wireEncodeNumber(x, 64))
 					const criteriaBlockTarget = this.isCriteriaHash(this.criteria)
-						? { blockHash: wireEncodeByteArray(this.criteria.blockHash) }
+						? { blockHash: wireEncodeNumber(this.criteria.blockHash, 64) }
 						: { fromBlock: wireEncodeBlockTag(this.criteria.fromBlock), toBlock: wireEncodeBlockTag(this.criteria.toBlock) }
 					const criteria = { address, topics, ...criteriaBlockTarget }
 					return {
@@ -902,7 +786,7 @@ export namespace Rpc {
 						params: [criteria],
 					}
 				}
-				private readonly isCriteriaHash = <TAddress extends AddressLike, TBytes32 extends Bytes32Like>(criteria: Criteria<TAddress, TBytes32>): criteria is CriteriaHash<TAddress, TBytes32> => !!(criteria as any).blockHash
+				private readonly isCriteriaHash = (criteria: Criteria): criteria is CriteriaHash => !!(criteria as any).blockHash
 			}
 			export class Response {
 				public readonly result: Array<Log>
@@ -910,26 +794,26 @@ export namespace Rpc {
 					this.result = raw.result.map(x => new Log(x))
 				}
 			}
-			export interface CriteriaBase<TAddress extends AddressLike, TBytes32 extends Bytes32Like> {
-				address: TAddress | Array<TAddress>
-				topics: Array<TBytes32>
+			export interface CriteriaBase {
+				address: bigint | Array<bigint>
+				topics: Array<bigint>
 			}
-			export interface CriteriaHash<TAddress extends AddressLike, TBytes32 extends Bytes32Like> extends CriteriaBase<TAddress, TBytes32> {
-				blockHash: TBytes32
+			export interface CriteriaHash extends CriteriaBase {
+				blockHash: bigint
 			}
-			export interface CriteriaTag<TAddress extends AddressLike, TBytes32 extends Bytes32Like> extends CriteriaBase<TAddress, TBytes32> {
+			export interface CriteriaTag extends CriteriaBase {
 				fromBlock: number
 				toBlock: number
 			}
-			type Criteria<TAddress extends AddressLike, TBytes32 extends Bytes32Like> = CriteriaHash<TAddress, TBytes32> | CriteriaTag<TAddress, TBytes32>
+			type Criteria = CriteriaHash | CriteriaTag
 		}
 		export namespace GetStorageAt {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getStorageAt', [RawAddress, RawQuantity, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawData> { }
-			export class Request<TAddress extends AddressLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly address: TAddress,
+					public readonly address: bigint,
 					public readonly index: bigint,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
@@ -937,7 +821,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getStorageAt',
-					params: [wireEncodeByteArray(this.address), wireEncodeNumber(this.index), wireEncodeBlockTag(this.blockTag)],
+					params: [wireEncodeNumber(this.address, 40), wireEncodeNumber(this.index), wireEncodeBlockTag(this.blockTag)],
 				})
 			}
 			export class Response {
@@ -950,17 +834,17 @@ export namespace Rpc {
 		export namespace GetTransactionByBlockHashAndIndex {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getTransactionByBlockHashAndIndex', [RawHash, RawQuantity]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawTransaction | null> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly blockHash: TBytes32,
+					public readonly blockHash: bigint,
 					public readonly transactionIndex: number,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getTransactionByBlockHashAndIndex',
-					params: [wireEncodeByteArray(this.blockHash), wireEncodeNumber(this.transactionIndex)],
+					params: [wireEncodeNumber(this.blockHash, 64), wireEncodeNumber(this.transactionIndex)],
 				})
 			}
 			export class Response {
@@ -1000,16 +884,16 @@ export namespace Rpc {
 		export namespace GetTransactionByHash {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getTransactionByHash', [RawHash]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawTransaction | null> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transactionHash: TBytes32,
+					public readonly transactionHash: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getTransactionByHash',
-					params: [wireEncodeByteArray(this.transactionHash)],
+					params: [wireEncodeNumber(this.transactionHash, 64)],
 				})
 			}
 			export class Response {
@@ -1024,17 +908,17 @@ export namespace Rpc {
 		export namespace GetTransactionCount {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getTransactionCount', [RawAddress, RawBlockTag]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
-			export class Request<TAddress extends AddressLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly address: TAddress,
+					public readonly address: bigint,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getTransactionCount',
-					params: [wireEncodeByteArray(this.address), wireEncodeBlockTag(this.blockTag)],
+					params: [wireEncodeNumber(this.address, 40), wireEncodeBlockTag(this.blockTag)],
 				})
 			}
 			export class Response {
@@ -1049,16 +933,16 @@ export namespace Rpc {
 		export namespace GetTransactionReceipt {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getTransactionReceipt', [RawHash]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawTransactionReceipt | null> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transactionHash: TBytes32,
+					public readonly transactionHash: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getTransactionReceipt',
-					params: [wireEncodeByteArray(this.transactionHash)],
+					params: [wireEncodeNumber(this.transactionHash, 64)],
 				})
 			}
 			export class Response {
@@ -1073,17 +957,17 @@ export namespace Rpc {
 		export namespace GetUncleByBlockHashAndIndex {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getUncleByBlockHashAndIndex', [RawHash, RawQuantity]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawBlock> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly blockHash: TBytes32,
+					public readonly blockHash: bigint,
 					public readonly uncleIndex: number,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getUncleByBlockHashAndIndex',
-					params: [wireEncodeByteArray(this.blockHash), wireEncodeNumber(this.uncleIndex)],
+					params: [wireEncodeNumber(this.blockHash, 64), wireEncodeNumber(this.uncleIndex)],
 				})
 			}
 			export class Response {
@@ -1123,16 +1007,16 @@ export namespace Rpc {
 		export namespace GetUncleCountByBlockHash {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getUncleCountByBlockHash', [RawHash]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
-			export class Request<TBytes32 extends Bytes32Like> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly blockHash: TBytes32,
+					public readonly blockHash: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_getUncleCountByBlockHash',
-					params: [wireEncodeByteArray(this.blockHash)],
+					params: [wireEncodeNumber(this.blockHash, 64)],
 				})
 			}
 			export class Response {
@@ -1193,10 +1077,10 @@ export namespace Rpc {
 		export namespace SendRawTransaction {
 			export interface RawRequest extends IJsonRpcRequest<'eth_sendRawTransaction', [RawData]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawHash> { }
-			export class Request<TBytes extends BytesLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly signedTransaction: TBytes,
+					public readonly signedTransaction: Uint8Array,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
@@ -1207,20 +1091,20 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: Bytes32
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Bytes32.fromHexString(raw.result)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
 		export namespace SendTransaction {
 			export interface RawRequest extends IJsonRpcRequest<'eth_sendTransaction', [RawOnChainTransaction]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawHash> { }
-			export class Request<TAddress extends AddressLike, TBytes extends BytesLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transaction: IOnChainTransaction<TAddress, TBytes>,
+					public readonly transaction: IOnChainTransaction,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
@@ -1231,35 +1115,35 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: Bytes32
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Bytes32.fromHexString(raw.result)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
 		export namespace Sign {
 			export interface RawRequest extends IJsonRpcRequest<'eth_sign', [RawAddress, RawData]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawHash> { }
-			export class Request<TAddress extends AddressLike, TBytes extends BytesLike> {
+			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly signerAddress: TAddress,
-					public readonly data: TBytes,
+					public readonly signerAddress: bigint,
+					public readonly data: Uint8Array,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_sign',
-					params: [wireEncodeByteArray(this.signerAddress), wireEncodeByteArray(this.data)],
+					params: [wireEncodeNumber(this.signerAddress, 40), wireEncodeByteArray(this.data)],
 				})
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: EncodedSignature
+				public readonly result: Bytes
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = EncodedSignature.fromHexString(raw.result)
+					this.result = Bytes.fromHexString(raw.result)
 				}
 			}
 		}
@@ -1298,12 +1182,13 @@ type RpcMethod<
 	TRequestConstructor extends new (id: string | number | null, ...args: any[]) => { wireEncode: () => IJsonRpcRequest<JsonRpcMethod, any[]> },
 	TResponseConstructor extends new (rawResponse: IJsonRpcSuccess<any>) => { readonly result: any },
 > = (...args: DropFirst<ConstructorParameters<TRequestConstructor>>) => Promise<ResultType<InstanceType<TResponseConstructor>>>
+type MakeRequired<T, K extends keyof T> = T & { [Key in K]-?: T[Key] }
 
 export interface JsonRpc {
-	readonly sendEth: (destination: AddressLike, amount: bigint) => Promise<TransactionReceipt>
-	readonly deployContract: (bytecode: BytesLike, value?: bigint) => Promise<Address>
-	readonly onChainContractCall: (transaction: Partial<IOnChainTransaction<AddressLike, BytesLike>> & { readonly to: AddressLike, readonly data: BytesLike }) => Promise<TransactionReceipt>
-	readonly offChainContractCall: (transaction: Partial<IOffChainTransaction<AddressLike, BytesLike>> & { readonly to: AddressLike, readonly data: BytesLike }) => Promise<Bytes>
+	readonly sendEth: (destination: bigint, amount: bigint) => Promise<TransactionReceipt>
+	readonly deployContract: (bytecode: Uint8Array, value?: bigint) => Promise<bigint>
+	readonly onChainContractCall: (transaction: MakeRequired<Partial<IOnChainTransaction>, 'to'|'data'>) => Promise<TransactionReceipt>
+	readonly offChainContractCall: (transaction: MakeRequired<Partial<IOffChainTransaction>, 'to'|'data'>) => Promise<Bytes>
 	readonly remoteProcedureCall: <
 		TRawRequest extends IJsonRpcRequest<JsonRpcMethod, Array<any>>,
 		TRawResponse extends IJsonRpcSuccess<any>
