@@ -184,10 +184,10 @@ export interface RawOnChainTransaction extends RawOffChainTransaction {
 
 export interface ILog {
 	readonly blockHash: bigint
-	readonly blockNumber: number
+	readonly blockNumber: bigint
 	readonly transactionHash: bigint
-	readonly transactionIndex: number
-	readonly logIndex: number
+	readonly transactionIndex: bigint
+	readonly logIndex: bigint
 	readonly address: bigint
 	readonly topics: Array<bigint>
 	readonly data: Uint8Array
@@ -195,19 +195,19 @@ export interface ILog {
 
 export class Log implements ILog {
 	public readonly blockHash: bigint
-	public readonly blockNumber: number
+	public readonly blockNumber: bigint
 	public readonly transactionHash: bigint
-	public readonly transactionIndex: number
-	public readonly logIndex: number
+	public readonly transactionIndex: bigint
+	public readonly logIndex: bigint
 	public readonly address: bigint
 	public readonly topics: Array<bigint>
 	public readonly data: Bytes
 	public constructor(raw: RawLog) {
 		this.blockHash = BigInt(raw.blockHash)
-		this.blockNumber = Number.parseInt(raw.blockNumber, 16)
+		this.blockNumber = BigInt(raw.blockNumber)
 		this.transactionHash = BigInt(raw.transactionHash)
-		this.transactionIndex = Number.parseInt(raw.transactionIndex, 16)
-		this.logIndex = Number.parseInt(raw.logIndex, 16)
+		this.transactionIndex = BigInt(raw.transactionIndex)
+		this.logIndex = BigInt(raw.logIndex)
 		this.address = BigInt(raw.address)
 		this.topics = raw.topics.map(x => BigInt(x))
 		this.data = Bytes.fromHexString(raw.data)
@@ -216,14 +216,14 @@ export class Log implements ILog {
 
 export interface ITransactionReceipt {
 	readonly blockHash: bigint
-	readonly blockNumber: number
+	readonly blockNumber: bigint
 	readonly hash: bigint
-	readonly index: number
+	readonly index: bigint
 	readonly from: bigint
 	readonly to: bigint | null
 	readonly contractAddress: bigint | null
-	readonly cumulativeGasUsed: number
-	readonly gasUsed: number
+	readonly cumulativeGasUsed: bigint
+	readonly gasUsed: bigint
 	readonly logs: Array<ILog>
 	readonly logsBloom: bigint
 	readonly status: boolean
@@ -231,27 +231,27 @@ export interface ITransactionReceipt {
 
 export class TransactionReceipt implements ITransactionReceipt {
 	public readonly blockHash: bigint
-	public readonly blockNumber: number
+	public readonly blockNumber: bigint
 	public readonly hash: bigint
-	public readonly index: number
+	public readonly index: bigint
 	public readonly from: bigint
 	public readonly to: bigint | null
 	public readonly contractAddress: bigint | null
-	public readonly cumulativeGasUsed: number
-	public readonly gasUsed: number
+	public readonly cumulativeGasUsed: bigint
+	public readonly gasUsed: bigint
 	public readonly logs: Array<Log>
 	public readonly logsBloom: bigint
 	public readonly status: boolean
 	public constructor(raw: RawTransactionReceipt) {
 		this.blockHash = BigInt(raw.blockHash)
-		this.blockNumber = Number.parseInt(raw.blockNumber, 16)
+		this.blockNumber = BigInt(raw.blockNumber)
 		this.hash = BigInt(raw.transactionHash)
-		this.index = Number.parseInt(raw.transactionIndex, 16)
+		this.index = BigInt(raw.transactionIndex)
 		this.from = BigInt(raw.from)
 		this.to = (raw.to) ? BigInt(raw.to!) : null
 		this.contractAddress = (raw.contractAddress) ? BigInt(raw.contractAddress) : null
-		this.cumulativeGasUsed = Number.parseInt(raw.cumulativeGasUsed, 16)
-		this.gasUsed = Number.parseInt(raw.gasUsed, 16)
+		this.cumulativeGasUsed = BigInt(raw.cumulativeGasUsed)
+		this.gasUsed = BigInt(raw.gasUsed)
 		this.logs = raw.logs.map(x => new Log(x))
 		this.logsBloom = BigInt(raw.logsBloom)
 		this.status = !!Number.parseInt(raw.status, 16)
@@ -260,15 +260,15 @@ export class TransactionReceipt implements ITransactionReceipt {
 
 export interface ITransaction {
 	readonly blockHash: bigint | null
-	readonly blockNumber: number | null
+	readonly blockNumber: bigint | null
 	readonly hash: bigint
-	readonly index: number | null
+	readonly index: bigint | null
 	readonly from: bigint
 	readonly to: bigint | null
 	readonly value: bigint
 	readonly data: Uint8Array
-	readonly nonce: number
-	readonly gas: number
+	readonly nonce: bigint
+	readonly gas: bigint
 	readonly gasPrice: bigint
 	readonly r: bigint
 	readonly s: bigint
@@ -277,30 +277,30 @@ export interface ITransaction {
 
 export class Transaction implements ITransaction {
 	public readonly blockHash: bigint | null
-	public readonly blockNumber: number | null
+	public readonly blockNumber: bigint | null
 	public readonly hash: bigint
-	public readonly index: number | null
+	public readonly index: bigint | null
 	public readonly from: bigint
 	public readonly to: bigint | null
 	public readonly value: bigint
 	public readonly data: Bytes
-	public readonly nonce: number
-	public readonly gas: number
+	public readonly nonce: bigint
+	public readonly gas: bigint
 	public readonly gasPrice: bigint
 	public readonly r: bigint
 	public readonly s: bigint
 	public readonly v: bigint
 	public constructor(raw: RawTransaction) {
 		this.blockHash = (raw.blockHash !== null) ? BigInt(raw.blockHash) : null
-		this.blockNumber = (raw.blockNumber !== null) ? Number.parseInt(raw.blockNumber, 16) : null
+		this.blockNumber = (raw.blockNumber !== null) ? BigInt(raw.blockNumber) : null
 		this.hash = BigInt(raw.hash)
-		this.index = (raw.transactionIndex !== null) ? Number.parseInt(raw.transactionIndex, 16) : null
+		this.index = (raw.transactionIndex !== null) ? BigInt(raw.transactionIndex) : null
 		this.from = BigInt(raw.from)
 		this.to = (raw.to !== null) ? BigInt(raw.to) : null
 		this.value = BigInt(raw.value)
 		this.data = Bytes.fromHexString(raw.input)
-		this.nonce = Number.parseInt(raw.nonce)
-		this.gas = Number.parseInt(raw.gas, 16)
+		this.nonce = BigInt(raw.nonce)
+		this.gas = BigInt(raw.gas)
 		this.gasPrice = BigInt(raw.gasPrice)
 		this.r = BigInt(raw.r)
 		this.s = BigInt(raw.s)
@@ -310,7 +310,7 @@ export class Transaction implements ITransaction {
 
 export interface IBlock {
 	readonly hash: bigint | null
-	readonly number: number | null
+	readonly number: bigint | null
 	readonly nonce: bigint | null
 	readonly logsBloom: bigint | null
 	readonly parentHash: bigint
@@ -323,9 +323,9 @@ export interface IBlock {
 	readonly difficulty: bigint
 	readonly totalDifficulty: bigint
 	readonly extraData: Uint8Array
-	readonly size: number
-	readonly gasLimit: number
-	readonly gasUsed: number
+	readonly size: bigint
+	readonly gasLimit: bigint
+	readonly gasUsed: bigint
 	readonly timestamp: Date
 	readonly transactions: Array<ITransaction | bigint>
 	readonly uncles: Array<bigint>
@@ -333,7 +333,7 @@ export interface IBlock {
 
 export class Block implements IBlock {
 	public readonly hash: bigint | null
-	public readonly number: number | null
+	public readonly number: bigint | null
 	public readonly nonce: bigint | null
 	public readonly logsBloom: bigint | null
 	public readonly parentHash: bigint
@@ -346,15 +346,15 @@ export class Block implements IBlock {
 	public readonly difficulty: bigint
 	public readonly totalDifficulty: bigint
 	public readonly extraData: Bytes
-	public readonly size: number
-	public readonly gasLimit: number
-	public readonly gasUsed: number
+	public readonly size: bigint
+	public readonly gasLimit: bigint
+	public readonly gasUsed: bigint
 	public readonly timestamp: Date
 	public readonly transactions: Array<Transaction | bigint>
 	public readonly uncles: Array<bigint>
 	public constructor(raw: RawBlock) {
 		this.hash = (raw.hash !== null) ? BigInt(raw.hash) : null
-		this.number = (raw.number !== null) ? Number.parseInt(raw.number, 16) : null
+		this.number = (raw.number !== null) ? BigInt(raw.number) : null
 		this.nonce = (raw.nonce !== null) ? BigInt(raw.nonce) : null
 		this.logsBloom = (raw.logsBloom !== null) ? BigInt(raw.logsBloom) : null
 		this.parentHash = BigInt(raw.parentHash)
@@ -367,10 +367,10 @@ export class Block implements IBlock {
 		this.difficulty = BigInt(raw.difficulty)
 		this.totalDifficulty = BigInt(raw.totalDifficulty)
 		this.extraData = Bytes.fromHexString(raw.extraData)
-		this.size = Number.parseInt(raw.size, 16)
-		this.gasLimit = Number.parseInt(raw.gasLimit, 16)
-		this.gasUsed = Number.parseInt(raw.gasUsed, 16)
-		this.timestamp = new Date(Number.parseInt(raw.timestamp, 16) * 1000)
+		this.size = BigInt(raw.size)
+		this.gasLimit = BigInt(raw.gasLimit)
+		this.gasUsed = BigInt(raw.gasUsed)
+		this.timestamp = new Date(Number.parseInt(raw.timestamp) * 1000)
 		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? BigInt(x) : new Transaction(x))
 		this.uncles = raw.uncles.map(x => BigInt(x))
 	}
@@ -387,17 +387,17 @@ export interface IOffChainTransaction {
 	readonly to: bigint | null
 	readonly value: bigint
 	readonly data: Uint8Array
-	readonly gasLimit: number | null
+	readonly gasLimit: bigint | null
 	readonly gasPrice: bigint
 }
 
 export interface IOnChainTransaction extends IOffChainTransaction {
-	readonly gasLimit: number
-	readonly nonce: number
+	readonly gasLimit: bigint
+	readonly nonce: bigint
 }
 
 export interface IUnsignedTransaction extends IOnChainTransaction {
-	readonly chainId: number
+	readonly chainId: bigint
 }
 
 export interface ISignedTransaction extends IOnChainTransaction, ISignature {
@@ -418,7 +418,7 @@ export function wireEncodeNumber(value: number | bigint, padding: number = 0): R
 	return `0x${value.toString(16).padStart(padding, '0')}`
 }
 
-export type BlockTag = 'latest' | 'earliest' | 'pending' | number
+export type BlockTag = 'latest' | 'earliest' | 'pending' | bigint
 export function wireEncodeBlockTag(tag: BlockTag): RawBlockTag { return (typeof tag === 'string') ? tag : wireEncodeNumber(tag) }
 
 export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction): RawOffChainTransaction {
@@ -512,9 +512,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -553,9 +553,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					const result = raw.result ? Number.parseInt(raw.result, 16) : null
+					const result = raw.result ? BigInt(raw.result) : null
 					if (result === null) throw new Error(`eth_chainId returned null`)
 					this.result = result
 				}
@@ -596,9 +596,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -705,9 +705,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -727,9 +727,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -802,8 +802,8 @@ export namespace Rpc {
 				blockHash: bigint
 			}
 			export interface CriteriaTag extends CriteriaBase {
-				fromBlock: number
-				toBlock: number
+				fromBlock: bigint
+				toBlock: bigint
 			}
 			type Criteria = CriteriaHash | CriteriaTag
 		}
@@ -838,7 +838,7 @@ export namespace Rpc {
 				public constructor(
 					public readonly id: string | number | null,
 					public readonly blockHash: bigint,
-					public readonly transactionIndex: number,
+					public readonly transactionIndex: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
@@ -862,7 +862,7 @@ export namespace Rpc {
 			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
-					public readonly transactionIndex: number,
+					public readonly transactionIndex: bigint,
 					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
@@ -923,10 +923,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -961,7 +961,7 @@ export namespace Rpc {
 				public constructor(
 					public readonly id: string | number | null,
 					public readonly blockHash: bigint,
-					public readonly uncleIndex: number,
+					public readonly uncleIndex: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
@@ -986,7 +986,7 @@ export namespace Rpc {
 				public constructor(
 					public readonly id: string | number | null,
 					public readonly blockTag: BlockTag,
-					public readonly uncleIndex: number,
+					public readonly uncleIndex: bigint,
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
@@ -1021,10 +1021,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -1045,10 +1045,10 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: number
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
-					this.result = Number.parseInt(raw.result, 16)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
@@ -1162,13 +1162,13 @@ export namespace Rpc {
 			}
 			export class Response {
 				public readonly id: string | number | null
-				public readonly result: false | { readonly currentBlock: number, readonly highestBlock: number, readonly startingBlock: number }
+				public readonly result: false | { readonly currentBlock: bigint, readonly highestBlock: bigint, readonly startingBlock: bigint }
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
 					this.result = (typeof raw.result === 'boolean') ? raw.result : {
-						currentBlock: Number.parseInt(raw.result.currentBlock, 16),
-						highestBlock: Number.parseInt(raw.result.highestBlock, 16),
-						startingBlock: Number.parseInt(raw.result.startingBlock, 16),
+						currentBlock: BigInt(raw.result.currentBlock),
+						highestBlock: BigInt(raw.result.highestBlock),
+						startingBlock: BigInt(raw.result.startingBlock),
 					}
 				}
 			}

@@ -62,14 +62,14 @@ function testTransactionReceipt() {
 	}
 	const sampleTransactionReceipt = new TransactionReceipt(sampleRawTransactionReceipt)
 	assert.equal(sampleTransactionReceipt.blockHash, 0xb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cn)
-	assert.equal(sampleTransactionReceipt.blockNumber, 6886576)
+	assert.equal(sampleTransactionReceipt.blockNumber, 6886576n)
 	assert.isNotNull(sampleTransactionReceipt.contractAddress)
 	assert.equal(sampleTransactionReceipt.contractAddress!, 0xbaadf00dbaadf00dbaadf00dbaadf00dbaadf00dn)
-	assert.equal(sampleTransactionReceipt.cumulativeGasUsed, 1412659)
+	assert.equal(sampleTransactionReceipt.cumulativeGasUsed, 1412659n)
 	assert.equal(sampleTransactionReceipt.from, 0xbabebabebabebabebabebabebabebabebabebaben)
-	assert.equal(sampleTransactionReceipt.gasUsed, 762598)
+	assert.equal(sampleTransactionReceipt.gasUsed, 762598n)
 	assert.equal(sampleTransactionReceipt.hash, 0xcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefn)
-	assert.equal(sampleTransactionReceipt.index, 4)
+	assert.equal(sampleTransactionReceipt.index, 4n)
 	assert.equal(sampleTransactionReceipt.status, true)
 	assert.isNull(sampleTransactionReceipt.to)
 	assert.equal(sampleTransactionReceipt.logsBloom, 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000n)
@@ -77,13 +77,13 @@ function testTransactionReceipt() {
 	const sampleLog = sampleTransactionReceipt.logs[0]
 	assert.equal(sampleLog.address, 0xdeadbabedeadbabedeadbabedeadbabedeadbaben)
 	assert.equal(sampleLog.blockHash, 0xb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cb10cn)
-	assert.equal(sampleLog.blockNumber, 436)
+	assert.equal(sampleLog.blockNumber, 436n)
 	assert.equalBytes(sampleLog.data, '0000000000000000000000000000000000000000000000000000000000000000')
-	assert.equal(sampleLog.logIndex, 1)
+	assert.equal(sampleLog.logIndex, 1n)
 	assert.equal(sampleLog.topics.length, 1)
 	assert.equal(sampleLog.topics[0], 0xdeaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeaffacedeaffacen)
 	assert.equal(sampleLog.transactionHash, 0xcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefcafebeefn)
-	assert.equal(sampleLog.transactionIndex, 0)
+	assert.equal(sampleLog.transactionIndex, 0n)
 }
 
 function testTransaction() {
@@ -111,14 +111,14 @@ function testTransaction() {
 	}
 	const transaction = new Transaction(rawTransaction)
 	assert.equal(transaction.blockHash!, 0xd0007d3e0884b25c214aa15a0daeca341efeadfc46f9d323d4916b5ac4f87533n)
-	assert.equal(transaction.blockNumber, 0x7a729b)
+	assert.equal(transaction.blockNumber, 0x7a729bn)
 	assert.equalBytes(transaction.data, 'a9059cbb0000000000000000000000002c55161d18a002307dc721d9bbc6502e1523e9b50000000000000000000000000000000000000000000000000000000000000050')
 	assert.equal(transaction.from, 0xfc15680a8423a540d33ca90c5e3616e93a032f94n)
-	assert.equal(transaction.gas, 0xc801)
+	assert.equal(transaction.gas, 0xc801n)
 	assert.equal(transaction.gasPrice, 0x98bca5a00n)
 	assert.equal(transaction.hash, 0x55066e2f47b7fdede6ab6f4a1abb026d9e7bbff94259d2e8da8ed7fb40e87673n)
-	assert.equal(transaction.index, 0)
-	assert.equal(transaction.nonce, 0x35d)
+	assert.equal(transaction.index, 0n)
+	assert.equal(transaction.nonce, 0x35dn)
 	assert.equal(transaction.r, 0x7bb1ee45cab7da0a651ad45f3b28f4f1503125132d35c211648139cedbd99bbbn)
 	assert.equal(transaction.s, 0x5257df01b2ec8b3384344f29b4c03c1715c1eee30e9c3fd82c0b29691344200en)
 	assert.equal(transaction.to!, 0xd9dbe80995dbe64e371464b94d78baf10a694ed0n)
@@ -251,18 +251,18 @@ function testBlock() {
 	assert.equal(block.author, 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4cn)
 	assert.equal(block.difficulty, 0x78844c551bb64n)
 	assert.equalBytes(block.extraData, '5050594520737061726b706f6f6c2d6574682d636e2d687a32')
-	assert.equal(block.gasLimit, 0x7a1200)
-	assert.equal(block.gasUsed, 0x79d085)
+	assert.equal(block.gasLimit, 0x7a1200n)
+	assert.equal(block.gasUsed, 0x79d085n)
 	assert.equal(block.hash!, 0xc2d892b79e5dd49ac92b09e4b3fdecad98e64d0abcd73adb9f942ae5fa6b858an)
 	assert.isNotNull(block.logsBloom)
 	assert.equal(block.logsBloom!, 0x00c0c0420145010000490200301900000092000a45408440028000080008110080080a41000900b0400020014010050042002d008e800810005000320025011a040c00000026081008a41088080004002200146082040018c080400424500060022c000009002802201048502080000184033a08000830820044803405000819140001010101000008e2041404050031203654402130124085804290001048c820c08000225071809085009ec044030020180ca0048518000000082000220000000004028200000000050110221c0c2008000a0140081002000880820c81001e20062000004901008850629404012004102108000001d4000404110902000021n)
 	assert.equal(block.miner, 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4cn)
 	assert.equal(block.nonce, 0x8a7ec0380d2e65f1n)
-	assert.equal(block.number, 0x7a876d)
+	assert.equal(block.number, 0x7a876dn)
 	assert.equal(block.parentHash, 0xcf512261ac81443eaadfd1b92bbcd73d053f3b4bcc6004fe6da4f148120e8da9n)
 	assert.equal(block.receiptsRoot, 0x13b6265c328b199e3eb30b29a17e0da9d77991630ff7d20d58f201881854e244n)
 	assert.equal(block.sha3Uncles, 0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347n)
-	assert.equal(block.size, 0x2e23)
+	assert.equal(block.size, 0x2e23n)
 	assert.equal(block.stateRoot, 0x0f5c0beb0a2d2e9d5af0c8de1d43642d52933677320d5b490fb13d6bb496f816n)
 	assert.equalTime(block.timestamp, new Date(0x5d12ac07 * 1000))
 	assert.equal(block.totalDifficulty, 0x246e0f10a832a4c2d73n)
@@ -291,13 +291,13 @@ function testWireEncoding() {
 	assert.throws(() => wireEncodeNumber(2**53), 'Wire encoded number values cannot be bigger than 4503599627370496.  Received: 9007199254740992')
 	assert.throws(() => wireEncodeNumber(2n**256n), 'Wire encoded bigint values must be smaller than 115792089237316195423570985008687907853269984665640564039457584007913129639936.  Received: 115792089237316195423570985008687907853269984665640564039457584007913129639936')
 	assert.equal(wireEncodeBlockTag('latest'), 'latest')
-	assert.equal(wireEncodeBlockTag(0xabcd), '0xabcd')
+	assert.equal(wireEncodeBlockTag(0xabcdn), '0xabcd')
 	assert.deepEqual(wireEncodeOffChainTransaction({
 		from: 0xdeadbabedeadbabedeadbabedeadbabedeadbaben,
 		to: 0xcafebeefcafebeefcafebeefcafebeefcafebeefn,
 		data: new Bytes(),
 		value: 0n,
-		gasLimit: 100_000,
+		gasLimit: 100_000n,
 		gasPrice: 2_001_000_000n,
 	}), {
 		from: '0xdeadbabedeadbabedeadbabedeadbabedeadbabe',
@@ -312,9 +312,9 @@ function testWireEncoding() {
 		to: 0xcafebeefcafebeefcafebeefcafebeefcafebeefn,
 		data: new Bytes(),
 		value: 0n,
-		gasLimit: 100_000,
+		gasLimit: 100_000n,
 		gasPrice: 2_001_000_000n,
-		nonce: 5,
+		nonce: 5n,
 	}), {
 		from: '0xdeadbabedeadbabedeadbabedeadbabedeadbabe',
 		to: '0xcafebeefcafebeefcafebeefcafebeefcafebeef',
