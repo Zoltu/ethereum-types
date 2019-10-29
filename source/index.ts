@@ -573,9 +573,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: bigint
+				public readonly result: bigint | null
 				public constructor(raw: RawResponse) {
-					this.result = BigInt(raw.result)
+					this.result = raw !== null ? BigInt(raw.result) : null
 				}
 			}
 		}
