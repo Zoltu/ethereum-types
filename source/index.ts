@@ -1251,6 +1251,7 @@ export interface JsonRpc {
 	readonly getProtocolVersion: RpcMethod<typeof Rpc.Eth.ProtocolVersion.Request, typeof Rpc.Eth.ProtocolVersion.Response>
 	readonly sendRawTransaction: RpcMethod<typeof Rpc.Eth.SendRawTransaction.Request, typeof Rpc.Eth.SendRawTransaction.Response>
 	readonly sendTransaction: RpcMethod<typeof Rpc.Eth.SendTransaction.Request, typeof Rpc.Eth.SendTransaction.Response>
+	readonly signTransaction: RpcMethod<typeof Rpc.Eth.SignTransaction.Request, typeof Rpc.Eth.SignTransaction.Response>
 	readonly sign: RpcMethod<typeof Rpc.Eth.Sign.Request, typeof Rpc.Eth.Sign.Response>
 	readonly syncing: RpcMethod<typeof Rpc.Eth.Syncing.Request, typeof Rpc.Eth.Syncing.Response>
 }
