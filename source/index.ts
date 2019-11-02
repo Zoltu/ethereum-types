@@ -1147,6 +1147,36 @@ export namespace Rpc {
 				}
 			}
 		}
+		export namespace SignTransaction {
+			export interface RawRequest extends IJsonRpcRequest<'eth_signTransaction', [RawOnChainTransaction]> { }
+			export interface RawResponse extends IJsonRpcSuccess<{raw:RawData, tx: RawTransaction}> { }
+			export class Request {
+				public constructor(
+					public readonly id: string | number | null,
+					public readonly transaction: IOnChainTransaction,
+				) { }
+				public readonly wireEncode = (): RawRequest => ({
+					jsonrpc: '2.0',
+					id: this.id,
+					method: 'eth_signTransaction',
+					params: [wireEncodeOnChainTransaction(this.transaction)],
+				})
+			}
+			export class Response {
+				public readonly id: string | number | null
+				public readonly result: {
+					transaction: Transaction
+					rlpEncodedTransaction: Uint8Array
+				}
+				public constructor(raw: RawResponse) {
+					this.id = raw.id
+					this.result = {
+						transaction: new Transaction(raw.result.tx),
+						rlpEncodedTransaction: Bytes.fromHexString(raw.result.raw),
+					}
+				}
+			}
+		}
 		export namespace Syncing {
 			export interface RawRequest extends IJsonRpcRequest<'eth_syncing', []> { }
 			export interface RawResponse extends IJsonRpcSuccess<false | { readonly currentBlock: RawQuantity, readonly highestBlock: RawQuantity, readonly startingBlock: RawQuantity }> { }
