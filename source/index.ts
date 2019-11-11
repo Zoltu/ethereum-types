@@ -182,6 +182,19 @@ export interface RawOnChainTransaction extends RawOffChainTransaction {
 	readonly nonce: RawQuantity
 }
 
+export interface RawSignedTransaction {
+	readonly from: RawAddress
+	readonly to: RawAddress | null
+	readonly value: RawQuantity
+	readonly input: RawData
+	readonly nonce: RawQuantity
+	readonly gas: RawQuantity
+	readonly gasPrice: RawQuantity
+	readonly r: RawQuantity
+	readonly s: RawQuantity
+	readonly v: RawQuantity
+}
+
 export interface ILog {
 	readonly blockHash: bigint
 	readonly blockNumber: bigint
@@ -403,6 +416,31 @@ export interface IUnsignedTransaction extends IOnChainTransaction {
 export interface ISignedTransaction extends IOnChainTransaction, ISignature {
 }
 
+export class SignedTransaction implements ISignedTransaction {
+	public readonly from: bigint
+	public readonly to: bigint | null
+	public readonly value: bigint
+	public readonly data: Uint8Array
+	public readonly gasPrice: bigint
+	public readonly gasLimit: bigint
+	public readonly nonce: bigint
+	public readonly r: bigint
+	public readonly s: bigint
+	public readonly v: bigint
+	public constructor(raw: RawSignedTransaction) {
+		this.from = BigInt(raw.from)
+		this.to = (raw.to !== null) ? BigInt(raw.to) : null
+		this.value = BigInt(raw.value)
+		this.data = Bytes.fromHexString(raw.input)
+		this.nonce = BigInt(raw.nonce)
+		this.gasLimit = BigInt(raw.gas)
+		this.gasPrice = BigInt(raw.gasPrice)
+		this.r = BigInt(raw.r)
+		this.s = BigInt(raw.s)
+		this.v = BigInt(raw.v)
+	}
+}
+
 export function wireEncodeByteArray(bytes: ArrayLike<number>): string {
 	let result = ''
 	for (let i = 0; i < bytes.length; ++i) {
@@ -464,8 +502,8 @@ export type IJsonRpcResponse<T> = IJsonRpcSuccess<T> | IJsonRpcError
 export function validateJsonRpcResponse<T>(response: any): response is IJsonRpcResponse<T> {
 	if (response.jsonrpc !== '2.0'
 		|| (typeof response.id !== 'string' && typeof response.id !== 'number' && response.id !== null)
-		|| (response.result && response.error)
-		|| (!response.result && !response.error)
+		|| ('result' in response && 'error' in response)
+		|| (!('result' in response) && !('error' in response))
 		|| (response.error && typeof response.error.code !== 'number')
 		|| (response.error && typeof response.error.message !== 'string'))
 		throw new Error(`Expected JSON-RPC response, received something else.\n${JSON.stringify(response)}`)
@@ -1149,7 +1187,7 @@ export namespace Rpc {
 		}
 		export namespace SignTransaction {
 			export interface RawRequest extends IJsonRpcRequest<'eth_signTransaction', [RawOnChainTransaction]> { }
-			export interface RawResponse extends IJsonRpcSuccess<{raw:RawData, tx: RawTransaction}> { }
+			export interface RawResponse extends IJsonRpcSuccess<{raw:RawData, tx: RawSignedTransaction}> { }
 			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
@@ -1165,14 +1203,14 @@ export namespace Rpc {
 			export class Response {
 				public readonly id: string | number | null
 				public readonly result: {
-					transaction: Transaction
-					rlpEncodedTransaction: Uint8Array
+					decodedTransaction: ISignedTransaction
+					encodedTransaction: Uint8Array
 				}
 				public constructor(raw: RawResponse) {
 					this.id = raw.id
 					this.result = {
-						transaction: new Transaction(raw.result.tx),
-						rlpEncodedTransaction: Bytes.fromHexString(raw.result.raw),
+						decodedTransaction: new SignedTransaction(raw.result.tx),
+						encodedTransaction: Bytes.fromHexString(raw.result.raw),
 					}
 				}
 			}
