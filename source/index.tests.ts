@@ -248,7 +248,6 @@ function testBlock() {
 		"uncles": []
 	}
 	const block = new Block(rawBlock)
-	assert.equal(block.author, 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4cn)
 	assert.equal(block.difficulty, 0x78844c551bb64n)
 	assert.equalBytes(block.extraData, '5050594520737061726b706f6f6c2d6574682d636e2d687a32')
 	assert.equal(block.gasLimit, 0x7a1200n)

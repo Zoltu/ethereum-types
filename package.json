@@ -1,7 +1,7 @@
 {
 	"name": "@zoltu/ethereum-types",
 	"description": "Some type definitions to use when working with Ethereum.",
-	"version": "8.2.2",
+	"version": "8.2.3",
 	"repository": {
 		"url": "https://github.com/zoltu/ethereum-types"
 	},

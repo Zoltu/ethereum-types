@@ -146,7 +146,6 @@ export interface RawBlock {
 	readonly transactionsRoot: RawData
 	readonly stateRoot: RawData
 	readonly receiptsRoot: RawData
-	readonly author: RawAddress
 	readonly miner: RawAddress
 	readonly difficulty: RawQuantity
 	readonly totalDifficulty: RawQuantity
@@ -331,7 +330,6 @@ export interface IBlock {
 	readonly transactionsRoot: bigint
 	readonly stateRoot: bigint
 	readonly receiptsRoot: bigint
-	readonly author: bigint
 	readonly miner: bigint
 	readonly difficulty: bigint
 	readonly totalDifficulty: bigint
@@ -354,7 +352,6 @@ export class Block implements IBlock {
 	public readonly transactionsRoot: bigint
 	public readonly stateRoot: bigint
 	public readonly receiptsRoot: bigint
-	public readonly author: bigint
 	public readonly miner: bigint
 	public readonly difficulty: bigint
 	public readonly totalDifficulty: bigint
@@ -375,7 +372,6 @@ export class Block implements IBlock {
 		this.transactionsRoot = BigInt(raw.transactionsRoot)
 		this.stateRoot = BigInt(raw.stateRoot)
 		this.receiptsRoot = BigInt(raw.receiptsRoot)
-		this.author = BigInt(raw.author)
 		this.miner = BigInt(raw.miner)
 		this.difficulty = BigInt(raw.difficulty)
 		this.totalDifficulty = BigInt(raw.totalDifficulty)
