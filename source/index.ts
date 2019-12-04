@@ -22,9 +22,19 @@ export class Bytes extends Uint8Array {
 		return this.fromByteArray(bytes, pad)
 	}
 
-	public static fromStringLiteral(literal: string): Bytes {
+	public static fromStringLiteral(literal: string, pad32: 'left' | 'right' | 'none' = 'none'): Bytes {
 		const encoded = new TextEncoder().encode(literal)
-		return this.fromByteArray(encoded)
+		const padding = new Uint8Array((32 - encoded.length % 32) % 32)
+		switch (pad32) {
+			case 'none':
+				return this.fromByteArray(encoded)
+			case 'left':
+				return this.fromByteArray([...padding, ...encoded])
+			case 'right':
+				return this.fromByteArray([...encoded, ...padding])
+			default:
+				throw new Error(`Invalid 'pad32' parameter: ${pad32}.`)
+		}
 	}
 
 	public static fromUnsignedInteger(value: bigint | number, numberOfBits: number): Bytes {
