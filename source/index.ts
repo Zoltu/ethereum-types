@@ -813,6 +813,10 @@ export namespace Rpc {
 					criteria: CriteriaHash,
 				)
 				public constructor(
+					id: string | number | null,
+					criteria: Criteria,
+				)
+				public constructor(
 					public readonly id: string | number | null,
 					public readonly criteria: Criteria
 				){ }
