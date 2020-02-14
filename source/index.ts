@@ -624,19 +624,18 @@ export namespace Rpc {
 			}
 		}
 		export namespace EstimateGas {
-			export interface RawRequest extends IJsonRpcRequest<'eth_estimateGas', [RawOffChainTransaction, RawBlockTag]> { }
+			export interface RawRequest extends IJsonRpcRequest<'eth_estimateGas', [RawOffChainTransaction]> { }
 			export interface RawResponse extends IJsonRpcSuccess<RawQuantity> { }
 			export class Request {
 				public constructor(
 					public readonly id: string | number | null,
 					public readonly transaction: IOffChainTransaction,
-					public readonly blockTag: BlockTag = 'latest',
 				) { }
 				public readonly wireEncode = (): RawRequest => ({
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_estimateGas',
-					params: [ wireEncodeOffChainTransaction(this.transaction), wireEncodeBlockTag(this.blockTag) ],
+					params: [ wireEncodeOffChainTransaction(this.transaction) ],
 				})
 			}
 			export class Response {
