@@ -164,6 +164,7 @@ export interface RawBlock {
 	readonly gasLimit: RawQuantity
 	readonly gasUsed: RawQuantity
 	readonly timestamp: RawQuantity
+	readonly mixHash: RawHash
 	readonly transactions: Array<RawTransaction | RawHash>
 	readonly uncles: Array<RawHash>
 }
@@ -348,6 +349,7 @@ export interface IBlock {
 	readonly gasLimit: bigint
 	readonly gasUsed: bigint
 	readonly timestamp: Date
+	readonly mixHash: bigint
 	readonly transactions: Array<ITransaction | bigint>
 	readonly uncles: Array<bigint>
 }
@@ -370,6 +372,7 @@ export class Block implements IBlock {
 	public readonly gasLimit: bigint
 	public readonly gasUsed: bigint
 	public readonly timestamp: Date
+	public readonly mixHash: bigint
 	public readonly transactions: Array<Transaction | bigint>
 	public readonly uncles: Array<bigint>
 	public constructor(raw: RawBlock) {
@@ -390,6 +393,7 @@ export class Block implements IBlock {
 		this.gasLimit = BigInt(raw.gasLimit)
 		this.gasUsed = BigInt(raw.gasUsed)
 		this.timestamp = new Date(Number.parseInt(raw.timestamp) * 1000)
+		this.mixHash = BigInt(raw.mixHash)
 		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? BigInt(x) : new Transaction(x))
 		this.uncles = raw.uncles.map(x => BigInt(x))
 	}
