@@ -426,7 +426,7 @@ export class MerklePatritiaProof {
 	constructor(raw: RawMerklePatritiaProof) {
 		this.balance = BigInt(raw.balance)
 		this.codeHash = BigInt(raw.codeHash)
-		this.nonce = BigInt(raw.codeHash)
+		this.nonce = BigInt(raw.nonce)
 		this.storageHash = BigInt(raw.storageHash)
 		this.accountProof = raw.accountProof.map(x => Bytes.fromHexString(x))
 		this.storageProof = raw.storageProof.map(x => ({
