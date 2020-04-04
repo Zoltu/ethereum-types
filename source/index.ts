@@ -179,6 +179,19 @@ export interface RawTypedData {
 	readonly message: unknown
 }
 
+export interface RawMerklePatritiaProof {
+	balance: RawQuantity
+	codeHash: RawHash
+	nonce: RawQuantity
+	storageHash: RawHash
+	accountProof: Array<RawData>
+	storageProof: Array<{
+		key: RawQuantity
+		value: RawQuantity
+		proof: Array<RawData>
+	}>
+}
+
 export interface RawOffChainTransaction {
 	readonly from: RawAddress
 	readonly to: RawAddress | null
@@ -399,6 +412,31 @@ export class Block implements IBlock {
 	}
 }
 
+export class MerklePatritiaProof {
+	balance: bigint
+	codeHash: bigint
+	nonce: bigint
+	storageHash: bigint
+	accountProof: readonly Bytes[]
+	storageProof: readonly {
+		key: bigint
+		value: bigint
+		proof: readonly Bytes[]
+	}[]
+	constructor(raw: RawMerklePatritiaProof) {
+		this.balance = BigInt(raw.balance)
+		this.codeHash = BigInt(raw.codeHash)
+		this.nonce = BigInt(raw.codeHash)
+		this.storageHash = BigInt(raw.storageHash)
+		this.accountProof = raw.accountProof.map(x => Bytes.fromHexString(x))
+		this.storageProof = raw.storageProof.map(x => ({
+			key: BigInt(x.key),
+			value: BigInt(x.value),
+			proof: x.proof.map(y => Bytes.fromHexString(y)),
+		}))
+	}
+}
+
 export interface ISignature {
 	readonly r: bigint
 	readonly s: bigint
@@ -487,7 +525,7 @@ export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction): 
 	}
 }
 
-export type JsonRpcMethod = 'eth_accounts' | 'eth_blockNumber' | 'eth_call' | 'eth_chainId' | 'eth_coinbase' | 'eth_estimateGas' | 'eth_gasPrice' | 'eth_getBalance' | 'eth_getBlockByHash' | 'eth_getBlockByNumber' | 'eth_getBlockTransactionCountByHash' | 'eth_getBlockTransactionCountByNumber' | 'eth_getCode' | 'eth_getLogs' | 'eth_getStorageAt' | 'eth_getTransactionByBlockHashAndIndex' | 'eth_getTransactionByBlockNumberAndIndex' | 'eth_getTransactionByHash' | 'eth_getTransactionCount' | 'eth_getTransactionReceipt' | 'eth_getUncleByBlockHashAndIndex' | 'eth_getUncleByBlockNumberAndIndex' | 'eth_getUncleCountByBlockHash' | 'eth_getUncleCountByBlockNumber' | 'eth_protocolVersion' | 'eth_sendRawTransaction' | 'eth_sendTransaction' | 'eth_sign' | 'eth_signTransaction' | 'eth_signTypedData' | 'eth_syncing'
+export type JsonRpcMethod = 'eth_accounts' | 'eth_blockNumber' | 'eth_call' | 'eth_chainId' | 'eth_coinbase' | 'eth_estimateGas' | 'eth_gasPrice' | 'eth_getBalance' | 'eth_getBlockByHash' | 'eth_getBlockByNumber' | 'eth_getBlockTransactionCountByHash' | 'eth_getBlockTransactionCountByNumber' | 'eth_getCode' | 'eth_getLogs' | 'eth_getProof' | 'eth_getStorageAt' | 'eth_getTransactionByBlockHashAndIndex' | 'eth_getTransactionByBlockNumberAndIndex' | 'eth_getTransactionByHash' | 'eth_getTransactionCount' | 'eth_getTransactionReceipt' | 'eth_getUncleByBlockHashAndIndex' | 'eth_getUncleByBlockNumberAndIndex' | 'eth_getUncleCountByBlockHash' | 'eth_getUncleCountByBlockNumber' | 'eth_protocolVersion' | 'eth_sendRawTransaction' | 'eth_sendTransaction' | 'eth_sign' | 'eth_signTransaction' | 'eth_signTypedData' | 'eth_syncing'
 export interface IJsonRpcRequest<TMethod extends JsonRpcMethod, TParams extends Array<unknown>> {
 	readonly jsonrpc: '2.0'
 	readonly id: string | number | null
@@ -857,6 +895,30 @@ export namespace Rpc {
 				toBlock: bigint
 			}
 			type Criteria = CriteriaHash | CriteriaTag
+		}
+		export namespace GetProof {
+			export interface RawRequest extends IJsonRpcRequest<'eth_getProof', [RawAddress, Array<RawHash>, RawBlockTag]> { }
+			export interface RawResponse extends IJsonRpcSuccess<RawMerklePatritiaProof> { }
+			export class Request {
+				public constructor(
+					public readonly id: string | number | null,
+					public readonly address: bigint,
+					public readonly storageKeys: readonly bigint[],
+					public readonly blockTag: BlockTag = 'latest',
+				) { }
+				public readonly wireEncode = (): RawRequest => ({
+					jsonrpc: '2.0',
+					id: this.id,
+					method: 'eth_getProof',
+					params: [wireEncodeNumber(this.address, 40), this.storageKeys.map(x => wireEncodeNumber(x, 64)), wireEncodeBlockTag(this.blockTag)]
+				})
+			}
+			export class Response {
+				public readonly result: MerklePatritiaProof
+				public constructor(raw: RawResponse) {
+					this.result = new MerklePatritiaProof(raw.result)
+				}
+			}
 		}
 		export namespace GetStorageAt {
 			export interface RawRequest extends IJsonRpcRequest<'eth_getStorageAt', [RawAddress, RawQuantity, RawBlockTag]> { }
@@ -1289,6 +1351,7 @@ export interface JsonRpc {
 	readonly getCode: RpcMethod<typeof Rpc.Eth.GetCode.Request, typeof Rpc.Eth.GetCode.Response>
 	readonly getGasPrice: RpcMethod<typeof Rpc.Eth.GasPrice.Request, typeof Rpc.Eth.GasPrice.Response>
 	readonly getLogs: RpcMethod<typeof Rpc.Eth.GetLogs.Request, typeof Rpc.Eth.GetLogs.Response>
+	readonly getProof: RpcMethod<typeof Rpc.Eth.GetProof.Request, typeof Rpc.Eth.GetProof.Response>
 	readonly getStorageAt: RpcMethod<typeof Rpc.Eth.GetStorageAt.Request, typeof Rpc.Eth.GetStorageAt.Response>
 	readonly getTransactionByBlockHashAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockHashAndIndex.Response>
 	readonly getTransactionByBlockNumberAndIndex: RpcMethod<typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Request, typeof Rpc.Eth.GetTransactionByBlockNumberAndIndex.Response>
