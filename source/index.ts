@@ -149,7 +149,7 @@ export interface RawTransaction {
 export interface RawBlock {
 	readonly hash: RawHash | null
 	readonly number: RawQuantity | null
-	readonly nonce: RawData | null
+	readonly nonce: RawData | null | undefined
 	readonly logsBloom: RawData | null
 	readonly parentHash: RawHash
 	readonly sha3Uncles: RawHash
@@ -164,7 +164,7 @@ export interface RawBlock {
 	readonly gasLimit: RawQuantity
 	readonly gasUsed: RawQuantity
 	readonly timestamp: RawQuantity
-	readonly mixHash: RawHash
+	readonly mixHash: RawHash | undefined
 	readonly transactions: Array<RawTransaction | RawHash>
 	readonly uncles: Array<RawHash>
 }
@@ -362,7 +362,7 @@ export interface IBlock {
 	readonly gasLimit: bigint
 	readonly gasUsed: bigint
 	readonly timestamp: Date
-	readonly mixHash: bigint
+	readonly mixHash: bigint | null
 	readonly transactions: Array<ITransaction | bigint>
 	readonly uncles: Array<bigint>
 }
@@ -370,6 +370,7 @@ export interface IBlock {
 export class Block implements IBlock {
 	public readonly hash: bigint | null
 	public readonly number: bigint | null
+	/** Will be null for OpenEthereum Proof of Authority networks. */
 	public readonly nonce: bigint | null
 	public readonly logsBloom: bigint | null
 	public readonly parentHash: bigint
@@ -385,13 +386,14 @@ export class Block implements IBlock {
 	public readonly gasLimit: bigint
 	public readonly gasUsed: bigint
 	public readonly timestamp: Date
-	public readonly mixHash: bigint
+	/** Will be null for OpenEthereum Proof of Authority networks. */
+	public readonly mixHash: bigint | null
 	public readonly transactions: Array<Transaction | bigint>
 	public readonly uncles: Array<bigint>
 	public constructor(raw: RawBlock) {
 		this.hash = (raw.hash !== null) ? BigInt(raw.hash) : null
-		this.number = (raw.number !== null) ? BigInt(raw.number) : null
-		this.nonce = (raw.nonce !== null) ? BigInt(raw.nonce) : null
+		this.number = (raw.number !== null && raw.number) ? BigInt(raw.number) : null
+		this.nonce = (raw.nonce !== null && raw.nonce !== undefined) ? BigInt(raw.nonce) : null
 		this.logsBloom = (raw.logsBloom !== null) ? BigInt(raw.logsBloom) : null
 		this.parentHash = BigInt(raw.parentHash)
 		this.sha3Uncles = BigInt(raw.sha3Uncles)
@@ -406,7 +408,7 @@ export class Block implements IBlock {
 		this.gasLimit = BigInt(raw.gasLimit)
 		this.gasUsed = BigInt(raw.gasUsed)
 		this.timestamp = new Date(Number.parseInt(raw.timestamp) * 1000)
-		this.mixHash = BigInt(raw.mixHash)
+		this.mixHash = (raw.mixHash !== undefined) ? BigInt(raw.mixHash) : null
 		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? BigInt(x) : new Transaction(x))
 		this.uncles = raw.uncles.map(x => BigInt(x))
 	}
