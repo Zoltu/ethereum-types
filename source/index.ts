@@ -187,7 +187,8 @@ export interface RawMerklePatritiaProof {
 	accountProof: Array<RawData>
 	storageProof: Array<{
 		key: RawQuantity
-		value: RawQuantity
+		// https://github.com/NethermindEth/nethermind/pull/1987
+		value: RawQuantity | null
 		proof: Array<RawData>
 	}>
 }
@@ -433,7 +434,7 @@ export class MerklePatritiaProof {
 		this.accountProof = raw.accountProof.map(x => Bytes.fromHexString(x))
 		this.storageProof = raw.storageProof.map(x => ({
 			key: BigInt(x.key),
-			value: BigInt(x.value),
+			value: BigInt(x.value || '0x0'),
 			proof: x.proof.map(y => Bytes.fromHexString(y)),
 		}))
 	}
