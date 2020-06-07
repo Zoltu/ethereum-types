@@ -941,9 +941,9 @@ export namespace Rpc {
 				})
 			}
 			export class Response {
-				public readonly result: Bytes
+				public readonly result: bigint
 				public constructor(raw: RawResponse) {
-					this.result = Bytes.fromHexString(raw.result)
+					this.result = BigInt(raw.result)
 				}
 			}
 		}
