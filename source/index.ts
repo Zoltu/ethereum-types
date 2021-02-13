@@ -533,7 +533,7 @@ export interface IJsonRpcRequest<TMethod extends JsonRpcMethod, TParams extends 
 	readonly jsonrpc: '2.0'
 	readonly id: string | number | null
 	readonly method: TMethod
-	readonly params?: TParams
+	readonly params: TParams
 }
 export interface IJsonRpcSuccess<TResult> {
 	readonly jsonrpc: '2.0'
@@ -578,6 +578,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_accounts',
+					params: [],
 				})
 			}
 			export class Response {
@@ -598,6 +599,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_blockNumber',
+					params: [],
 				})
 			}
 			export class Response {
@@ -639,6 +641,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_chainId',
+					params: [],
 				})
 			}
 			export class Response {
@@ -659,6 +662,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_coinbase',
+					params: [],
 				})
 			}
 			export class Response {
@@ -699,6 +703,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_gasPrice',
+					params: [],
 				})
 			}
 			export class Response {
@@ -1179,6 +1184,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_protocolVersion',
+					params: [],
 				})
 			}
 			export class Response {
@@ -1304,6 +1310,7 @@ export namespace Rpc {
 					jsonrpc: '2.0',
 					id: this.id,
 					method: 'eth_syncing',
+					params: [],
 				})
 			}
 			export class Response {
