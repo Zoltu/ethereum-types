@@ -198,11 +198,13 @@ export interface RawOffChainTransaction {
 	readonly to: RawAddress | null
 	readonly value: RawQuantity
 	readonly data: RawData
-	readonly gas: RawQuantity | null
-	readonly gasPrice: RawQuantity
+	readonly gas?: RawQuantity
+	readonly gasPrice?: RawQuantity
 }
 
 export interface RawOnChainTransaction extends RawOffChainTransaction {
+	readonly gas: RawQuantity
+	readonly gasPrice: RawQuantity
 	readonly nonce: RawQuantity
 }
 
@@ -451,12 +453,13 @@ export interface IOffChainTransaction {
 	readonly to: bigint | null
 	readonly value: bigint
 	readonly data: Uint8Array
-	readonly gasLimit: bigint | null
-	readonly gasPrice: bigint
+	readonly gasLimit?: bigint
+	readonly gasPrice?: bigint
 }
 
 export interface IOnChainTransaction extends IOffChainTransaction {
 	readonly gasLimit: bigint
+	readonly gasPrice: bigint
 	readonly nonce: bigint
 }
 
@@ -516,14 +519,16 @@ export function wireEncodeOffChainTransaction(transaction: IOffChainTransaction)
 		to: transaction.to ? wireEncodeNumber(transaction.to, 40) : null,
 		value: wireEncodeNumber(transaction.value),
 		data: wireEncodeByteArray(transaction.data),
-		gas: transaction.gasLimit ? wireEncodeNumber(transaction.gasLimit) : null,
-		gasPrice: wireEncodeNumber(transaction.gasPrice),
+		...transaction.gasLimit === undefined ? {} : { gas: wireEncodeNumber(transaction.gasLimit) },
+		...transaction.gasPrice === undefined ? {} : { gasPrice: wireEncodeNumber(transaction.gasPrice) },
 	}
 }
 
 export function wireEncodeOnChainTransaction(transaction: IOnChainTransaction): RawOnChainTransaction {
 	return {
 		...wireEncodeOffChainTransaction(transaction),
+		gas: wireEncodeNumber(transaction.gasLimit),
+		gasPrice: wireEncodeNumber(transaction.gasPrice),
 		nonce: wireEncodeNumber(transaction.nonce),
 	}
 }

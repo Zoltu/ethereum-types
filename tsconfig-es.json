@@ -5,7 +5,6 @@
 		"moduleResolution": "classic",
 		"outDir": "output-es",
 		"noEmit": false,
-		"declaration": true,
 	},
 	"exclude": [
 		"source/**/*.tests.ts",

@@ -5,7 +5,6 @@
 		"moduleResolution": "node",
 		"outDir": "output-node",
 		"noEmit": false,
-		"declaration": true,
 	},
 	"exclude": [
 		"source/**/*.tests.ts",
