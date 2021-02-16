@@ -19,8 +19,7 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig-es.json && tsc --project tsconfig-node.json",
-		"test": "ts-node --project tsconfig-tests.json source/index.tests.ts",
-		"prepublishOnly": "npm run build && npm run test"
+		"test": "ts-node --project tsconfig-tests.json source/index.tests.ts"
 	},
 	"files": [
 		"/output-es/",
