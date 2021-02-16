@@ -1,28 +1,29 @@
 name: Node.js CI
 
 on:
-  release:
   push:
-    types: [published]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: 'ubuntu-latest'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: 'actions/checkout@v2'
       with:
-        ref: ${{ github.event.release.target_commitish }}
-    - name: Use Node.js 14
-      uses: actions/setup-node@v1
+        ref: '${{ github.event.release.target_commitish }}'
+    - name: 'Use Node.js 14'
+      uses: 'actions/setup-node@v1'
       with:
-        node-version: 14
-        registry-url: https://registry.npmjs.org/
-    - run: npm version --no-git-tag-version ${{ github.event.release.tag_name }}
-    - run: npm ci
-    - run: npm run build
-    - run: npm run test
-    - run: npm publish
+        node-version: '14'
+        registry-url: 'https://registry.npmjs.org/'
+    - run: 'echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV'
+    - run: 'npm version --no-git-tag-version ${{ env.RELEASE_VERSION }}'
+    - run: 'npm ci'
+    - run: 'npm run build'
+    - run: 'npm run test'
+    - run: 'npm publish'
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: '${{ secrets.NPM_TOKEN }}'
