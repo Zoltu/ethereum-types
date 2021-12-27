@@ -163,6 +163,7 @@ export interface RawBlock {
 	readonly size: RawQuantity
 	readonly gasLimit: RawQuantity
 	readonly gasUsed: RawQuantity
+	readonly baseFeePerGas: RawQuantity
 	readonly timestamp: RawQuantity
 	readonly mixHash: RawHash | undefined
 	readonly transactions: Array<RawTransaction | RawHash>
@@ -364,6 +365,7 @@ export interface IBlock {
 	readonly size: bigint
 	readonly gasLimit: bigint
 	readonly gasUsed: bigint
+	readonly baseFeePerGas: bigint
 	readonly timestamp: Date
 	readonly mixHash: bigint | null
 	readonly transactions: Array<ITransaction | bigint>
@@ -388,6 +390,7 @@ export class Block implements IBlock {
 	public readonly size: bigint
 	public readonly gasLimit: bigint
 	public readonly gasUsed: bigint
+	public readonly baseFeePerGas: bigint
 	public readonly timestamp: Date
 	/** Will be null for OpenEthereum Proof of Authority networks. */
 	public readonly mixHash: bigint | null
@@ -410,6 +413,7 @@ export class Block implements IBlock {
 		this.size = BigInt(raw.size)
 		this.gasLimit = BigInt(raw.gasLimit)
 		this.gasUsed = BigInt(raw.gasUsed)
+		this.baseFeePerGas = BigInt(raw.baseFeePerGas)
 		this.timestamp = new Date(Number.parseInt(raw.timestamp) * 1000)
 		this.mixHash = (raw.mixHash !== undefined) ? BigInt(raw.mixHash) : null
 		this.transactions = raw.transactions.map(x => (typeof x === 'string') ? BigInt(x) : new Transaction(x))
