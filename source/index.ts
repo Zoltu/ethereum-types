@@ -15,7 +15,7 @@ export class Bytes extends Uint8Array {
 		if (match === null) throw new Error(`Expected a hex string encoded byte array with an optional '0x' prefix but received ${hex}`)
 		const normalized = match[1]
 		if (normalized.length % 2) throw new Error(`Hex string encoded byte array must be an even number of charcaters long.`)
-		const bytes = []
+		const bytes: Array<number> = []
 		for (let i = 0; i < normalized.length; i += 2) {
 			bytes.push(Number.parseInt(`${normalized[i]}${normalized[i + 1]}`, 16))
 		}
